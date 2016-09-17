@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FireSharp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using LastLibrary.Data;
 using LastLibrary.Models;
 using LastLibrary.Services;
+using LastLibrary.Services.Firebase;
 
 namespace LastLibrary
 {
@@ -57,6 +59,10 @@ namespace LastLibrary
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            //Add the Firebase Service
+            services.Configure<FirebaseAppSettings>(Configuration.GetSection("Firebase"));
+            services.AddTransient<IFirebaseService, FirebaseService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
