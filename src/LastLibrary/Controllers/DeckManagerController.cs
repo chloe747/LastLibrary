@@ -11,7 +11,15 @@ namespace LastLibrary.Controllers
         // GET: DeckManager
         public ActionResult Index()
         {
-            return View();
+            bool isLoggedIn = User.Identity.IsAuthenticated;
+            if (isLoggedIn)
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: DeckManager/Details/5
