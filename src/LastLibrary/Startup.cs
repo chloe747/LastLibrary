@@ -61,8 +61,8 @@ namespace LastLibrary
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
             //Add the Firebase Service
-            services.Configure<FirebaseAppSettings>(Configuration.GetSection("Firebase"));
-            services.AddTransient<IFirebaseService, FirebaseService>();
+            services.Configure<FirebaseAppSettingsModel>(Configuration.GetSection("Firebase"));
+            services.AddSingleton<IFirebaseService, FirebaseService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

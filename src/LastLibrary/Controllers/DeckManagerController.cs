@@ -2,12 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FireSharp.Interfaces;
+using LastLibrary.Models.DeckManagerViewModel;
+using LastLibrary.Services.Firebase;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 namespace LastLibrary.Controllers
 {
     public class DeckManagerController : Controller
     {
+
+        private IFirebaseService FirebaseServiceImpl { get; }
+
+        public DeckManagerController(IFirebaseService firebaseService)
+        {
+            FirebaseServiceImpl = firebaseService;
+        }
+
         // GET: DeckManager
         public ActionResult Index()
         {
@@ -37,17 +48,17 @@ namespace LastLibrary.Controllers
         // POST: DeckManager/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(Deck deck)
         {
             try
             {
-                // TODO: Add insert logic here
+                var response = await FirebaseServiceImpl.WriteToFirebase(deck);
 
                 return RedirectToAction("Index");
             }
             catch
             {
-                return View();
+                return RedirectToAction("Index");
             }
         }
 
