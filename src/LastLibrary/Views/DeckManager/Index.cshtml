@@ -52,7 +52,7 @@
         function requestCard() {
             $("#cardSearchResults").empty();
             var inputText = $("#cardSearchInput").val();
-            $.ajax("/api/card/" + inputText,
+            $.ajax("/api/card/" + encodeURIComponent(inputText),
             {
                 success: function (result) {
                     result.cards.forEach(function(card) {
