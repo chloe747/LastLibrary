@@ -12,11 +12,11 @@ namespace LastLibrary.Controllers
     public class DeckManagerController : Controller
     {
 
-        private IFirebaseService FirebaseServiceImpl { get; }
+        private IFirebaseService FirebaseService { get; }
 
         public DeckManagerController(IFirebaseService firebaseService)
         {
-            FirebaseServiceImpl = firebaseService;
+            FirebaseService = firebaseService;
         }
 
         // GET: DeckManager
@@ -52,7 +52,7 @@ namespace LastLibrary.Controllers
         {
             try
             {
-                var response = await FirebaseServiceImpl.WriteToFirebase(deck);
+                var response = await FirebaseService.WriteToFirebase(deck);
 
                 return RedirectToAction("Index");
             }

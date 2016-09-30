@@ -14,6 +14,7 @@ using LastLibrary.Data;
 using LastLibrary.Models;
 using LastLibrary.Services;
 using LastLibrary.Services.Firebase;
+using LastLibrary.Services.MtgApi;
 
 namespace LastLibrary
 {
@@ -63,6 +64,10 @@ namespace LastLibrary
             //Add the Firebase Service
             services.Configure<FirebaseAppSettingsModel>(Configuration.GetSection("Firebase"));
             services.AddSingleton<IFirebaseService, FirebaseService>();
+
+            //Add the MtgApi service
+            services.Configure<MtgApiSettings>(Configuration.GetSection("MtgApi"));
+            services.AddSingleton<IMtgApiService, MtgApiService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
