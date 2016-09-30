@@ -22,3 +22,54 @@
         </div>
     </div>
 </form>
+
+<div id="cardSearch">
+    <h4>Search for a Card</h4>
+    <hr />
+    <label class="col-md-2 control-label">Card Name:</label>
+    <div class="col-md-10">
+        <input id="cardSearchInput" class="form-control"/>
+        <button id="cardSearchButton" class="btn btn-default">Search for Card</button>
+    </div>
+</div>
+
+<div id="cardSearchResults"></div>
+
+@section scripts{
+    <script type="text/javascript">
+        $('#cardSearchInput').keypress(function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                requestCard();
+            }
+        });
+
+        $('#cardSearchButton').click(function (e) {
+            e.preventDefault();
+            requestCard();
+        });
+
+        function requestCard() {
+            $("#cardSearchResults").empty();
+            var inputText = $("#cardSearchInput").val();
+            $.ajax("/api/card/" + inputText,
+            {
+                success: function (result) {
+                    result.cards.forEach(function(card) {
+                        displayReturnedCard(card);
+                    });
+                },
+                error: function (result) {
+                    console.error(result);
+                }
+            });
+        }
+
+        function displayReturnedCard(card) {
+            if (card.name === null || card.name === undefined) return null;
+            $('<p>', {
+                text: card.name
+            }).appendTo("#cardSearchResults");
+        }
+    </script>
+}
