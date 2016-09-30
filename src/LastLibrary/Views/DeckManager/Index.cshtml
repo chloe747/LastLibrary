@@ -58,9 +58,11 @@
                     result.cards.forEach(function(card) {
                         displayReturnedCard(card);
                     });
+                    return false;
                 },
                 error: function (result) {
                     console.error(result);
+                    return false;
                 }
             });
         }
