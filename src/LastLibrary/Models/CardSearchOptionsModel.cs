@@ -8,7 +8,7 @@ namespace LastLibrary.Models
 {
     public class CardSearchOptionsModel
     {
-         //Colour options
+        //Colour options
         public bool IsBlue { get; set; }
         public bool IsRed { get; set; }
         public bool IsGreen { get; set; }
