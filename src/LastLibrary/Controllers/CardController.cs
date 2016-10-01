@@ -30,7 +30,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace LastLibrary.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Card/{cardName}")]
     public class CardController : Controller
     {
         private IMtgApiService MtgApiService { get; }
@@ -43,24 +42,24 @@ namespace LastLibrary.Controllers
         /**
          * This will be the basic "Get cards by it's name" search
          */
+        [HttpGet]
+        [Route("api/Card/{cardName}")]
         public CardsModel Get(string cardName)
         {
-            //fire off asynchronous GET call
-            var cardGetRequest = MtgApiService.SearchForCards(cardName);
-
-            //wait for it to finish
-            Task.WaitAny(cardGetRequest);
-
-            //return the collection of cards
-            return cardGetRequest.Result;
+            //fire off the async GET call and return the result
+            return MtgApiService.SearchForCards(cardName);
         }
 
         /**
          * This will be the more detailed search
          */
-        public CardsModel Post(string cardName)
+        [HttpPost]
+        [Route("api/Card/{cardName}")]
+        [Route("api/Card/")]
+        public CardsModel Post(string cardName, [FromBody] CardSearchOptionsModel opts)
         {
-            throw new NotImplementedException();
+            //fire off the async call and return the result
+            return MtgApiService.SearchForCards(cardName, opts);
         }
 
 

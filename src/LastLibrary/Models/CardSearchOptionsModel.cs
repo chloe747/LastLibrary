@@ -17,25 +17,19 @@ namespace LastLibrary.Models
         public bool IsColorless { get; set; }
 
         //Power options
-        public int PowerLessThan { get; set; }
-        public int PowerLessThanEqualsTo { get; set; }
-        public int PowerEquals { get; set; }
-        public int PowerGreaterThan { get; set; }
-        public int PowerGreaterThanEqualsTo { get; set; }
+        public string Power { get; set; }
+        [RegularExpression("^gte$|^lte$|^lt$|^gt$")]
+        public string PowerOperator { get; set; }
 
         //Toughness options
-        public int ToughnessLessThan { get; set; }
-        public int ToughnessLessThanEqualsTo { get; set; }
-        public int ToughnessEquals { get; set; }
-        public int ToughnessGreaterThan { get; set; }
-        public int ToughnessGreaterThanEqualsTo { get; set; }
+        public string Toughness { get; set; }
+        [RegularExpression("^gte$|^lte$|^lt$|^gt$")]
+        public string ToughnessOperator { get; set; }
 
         //Converted Mana Cost options
-        public int CmcLessThan { get; set; }
-        public int CmcLessThanEqualsTo { get; set; }
-        public int CmcEquals { get; set; }
-        public int CmcGreaterThan { get; set; }
-        public int CmcGreaterThanEqualsTo { get; set; }
+        public string Cmc { get; set; }
+        [RegularExpression("^gte$|^lte$|^lt$|^gt$")]
+        public string CmcOperator { get; set; }
 
         //Card Rarity options
         [RegularExpression("^Mythic Rare$|^Rare$|^Common$|^Uncommon$")]
