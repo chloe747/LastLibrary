@@ -2,20 +2,116 @@
     font-family: "Open Sans", Serif;
     font-size: 2em;
 }
+
+h1-custom {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+  font-size: 2.5rem;
+  color: black;
+  font-family: "Open Sans", Serif;
+  text-transform: uppercase;
+}
+h1-custom:before, h1-custom:after {
+  background-color: #5b5b5b;
+  content: '\a0';
+  flex-grow: 1;
+  height: 1px;
+  position: relative;
+  top: 0.8em;
+}
+h1-custom:before {
+  margin-right:10px;
+}
+h1-custom:after {
+  margin-left:10px;
+}
+/* ----------------------nav bar------------------------------ */
 .navbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
     height: 130px;
     background: red; /* For browsers that do not support gradients */
     background: -webkit-linear-gradient(#131313, #454444); /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(#131313, #454444); /* For Opera 11.1 to 12.0 */
     background: -moz-linear-gradient(#131313, #454444); /* For Firefox 3.6 to 15 */
     background: linear-gradient(#131313, #454444); /* Standard syntax */
-    position: relative;
 }
 .navbar-brand img {
-         width: 340px;
-        height: auto;
+
+    width: 340px;
+    height: auto;
 }
 
 .nav {
      margin-top: 80px;
 }
+
+.nav-user {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    font-size: 1.5rem;
+}
+
+.navbar-btn {
+    border-width: 2px;
+    border-color: white;
+    background-color: #555555;
+}
+
+/* ----------------------deck building page------------------------------ */
+
+.container-left {
+    margin-top: 50px;
+    height: 1000px;
+
+    padding: 10px;
+}
+
+.container-right {
+    margin-top: 50px;
+    height: 1000px;
+    padding: 10px;
+}
+
+.input-big {
+    width: 100%;
+    max-width: 500px;
+    box-sizing: border-box;
+    border: 2px solid #5b5b5b;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #e1e1e1;
+    background-image: url('../../../../images/searchIcon.png');
+    background-size: 30px;
+    background-repeat: no-repeat;
+    padding: 5px 5px 5px 40px;
+}
+
+label {
+    font-size: 1.5rem;
+    color: #707070;
+}
+
+.submitButton {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.small-input {
+    position: absolute;
+    width: 7%;
+    max-width: 500px;
+    box-sizing: border-box;
+    border: 2px solid #5b5b5b;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #e1e1e1;
+    padding: 5px 5px 5px 5px;
+    margin-left: 20px;
+}
+
