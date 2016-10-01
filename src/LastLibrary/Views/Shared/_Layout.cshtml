@@ -9,6 +9,7 @@
 
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/custom.css" />
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment names="Staging,Production">
@@ -29,13 +30,15 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">LastLibrary</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">
+                    <img alt="Last Library - Deck Builder" src="~/images/logo.png">
+                </a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index">MY DECKS</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="About">BUILD</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">BROWSE</a></li>
                     @if (SignInManager.IsSignedIn(User))
                     {
                         <li><a asp-area="" asp-controller="DeckManager" asp-action="Index">Deck Manager</a></li>
@@ -49,7 +52,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2016 - LastLibrary</p>
+            <p>&copy; 2016 - LastLibrary HELLO WORLD</p>
         </footer>
     </div>
 
