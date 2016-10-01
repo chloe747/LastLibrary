@@ -19,7 +19,7 @@ namespace LastLibrary.Services.MtgApi
             CardsUrl = settings.Value.Urls.Cards;
         }
 
-        public async Task<CardsModel> SearchForCardsByName(string cardName)
+        public async Task<CardsModel> SearchForCards(string cardName)
         {
             // create the get request url
             var requestUrl = CardsUrl + "?name=" + cardName;
@@ -35,6 +35,11 @@ namespace LastLibrary.Services.MtgApi
             //deserialise the request
             var result = JsonConvert.DeserializeObject<CardsModel>(responseBody);
             return result;
+        }
+
+        public async Task<CardsModel> SearchForCards(string cardName, dynamic cardOpts)
+        {
+            throw new NotImplementedException();
         }
     }
 }
