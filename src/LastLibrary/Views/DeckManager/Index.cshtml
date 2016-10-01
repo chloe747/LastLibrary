@@ -7,12 +7,12 @@
 <h2>Deck Manager</h2>
 <form asp-controller="DeckManager" asp-action="Create" method="post" class="form-horizontal">
     <h4>Create a new deck.</h4>
-    <hr />
+    <hr/>
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
         <label asp-for="DeckName" class="col-md-2 control-label"></label>
         <div class="col-md-10">
-            <input asp-for="DeckName" class="form-control" />
+            <input asp-for="DeckName" class="form-control"/>
             <span asp-validation-for="DeckName" class="text-danger"></span>
         </div>
     </div>
@@ -25,53 +25,292 @@
 
 <div id="cardSearch">
     <h4>Search for a Card</h4>
-    <hr />
+    <hr/>
     <label class="col-md-2 control-label">Card Name:</label>
     <div class="col-md-10">
         <input id="cardSearchInput" class="form-control"/>
-        <button id="cardSearchButton" class="btn btn-default">Search for Card</button>
     </div>
+    <label class="col-md-2 control-label">Card Options:</label>
+    <div class="col-md-10">
+        <div>
+            <label class="checkbox-inline">
+                <input type="checkbox" id="blackCheckbox" value=""> Black
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" id="whiteCheckbox" value=""> White
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" id="blueCheckbox" value=""> Blue
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" id="greenCheckbox" value=""> Green
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" id="redCheckbox" value=""> Red
+            </label>
+        </div>
+        <div>
+            <h4>Power Settings</h4>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    <span id="powerText">Equals</span>
+                    <span class="caret"></span>
+                </button>
+                <ul id="powerList" class="dropdown-menu">
+                    <li>
+                        <a href="#">Equals</a>
+                    </li>
+                    <li>
+                        <a href="#">gt</a>
+                    </li>
+                    <li>
+                        <a href="#">gte</a>
+                    </li>
+                    <li>
+                        <a href="#">lt</a>
+                    </li>
+                    <li>
+                        <a href="#">lte</a>
+                    </li>
+                </ul>
+                <input id="powerInput" class="form-control"/>
+            </div>
+        </div>
+        <div>
+            <h4>Toughness Settings</h4>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    <span id="toughnessText">Equals</span>
+                    <span class="caret"></span>
+                </button>
+                <ul id="toughnessList" class="dropdown-menu">
+                    <li>
+                        <a href="#">Equals</a>
+                    </li>
+                    <li>
+                        <a href="#">gt</a>
+                    </li>
+                    <li>
+                        <a href="#">Ggte</a>
+                    </li>
+                    <li>
+                        <a href="#">lt</a>
+                    </li>
+                    <li>
+                        <a href="#">lte</a>
+                    </li>
+                </ul>
+                <input id="toughnessInput" class="form-control"/>
+            </div>
+        </div>
+        <div>
+            <h4>Converted Mana Cost Settings</h4>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    <span id="cmcText">Equals</span>
+                    <span class="caret"></span>
+                </button>
+                <ul id="cmcList" class="dropdown-menu">
+                    <li>
+                        <a href="#">Equals</a>
+                    </li>
+                    <li>
+                        <a href="#">gt</a>
+                    </li>
+                    <li>
+                        <a href="#">gte</a>
+                    </li>
+                    <li>
+                        <a href="#">lt</a>
+                    </li>
+                    <li>
+                        <a href="#">lte</a>
+                    </li>
+                </ul>
+                <input id="cmcInput" class="form-control"/>
+            </div>
+        </div>
+        <div>
+            <h4>Card Rarity Settings</h4>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    <span id="rarityText">Any</span>
+                    <span class="caret"></span>
+                </button>
+                <ul id="rarityList" class="dropdown-menu">
+                    <li>
+                        <a href="#">Any</a>
+                    </li>
+                    <li>
+                        <a href="#">Common</a>
+                    </li>
+                    <li>
+                        <a href="#">Uncommon</a>
+                    </li>
+                    <li>
+                        <a href="#">Rare</a>
+                    </li>
+                    <li>
+                        <a href="#">Mythic Rare</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <button id="cardSearchButton" class="btn btn-default">Search for Card</button>
 </div>
 
 <div id="cardSearchResults"></div>
 
 @section scripts{
     <script type="text/javascript">
-        $('#cardSearchInput').keypress(function (e) {
-            if (e.which === 13) {
+        $('#cardSearchInput')
+            .keypress(function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    requestCard();
+                }
+            });
+
+        $('#cardSearchButton')
+            .click(function(e) {
                 e.preventDefault();
                 requestCard();
-            }
-        });
+            });
 
-        $('#cardSearchButton').click(function (e) {
-            e.preventDefault();
-            requestCard();
-        });
+        //setup dropdown clicks
+        $('#cmcList li a')
+            .click(function() {
+                $("#cmcText").text($(this).text());
+            });
+        $('#powerList li a')
+            .click(function() {
+                $("#powerText").text($(this).text());
+            });
+        $('#toughnessList li a')
+            .click(function() {
+                $("#toughnessText").text($(this).text());
+            });
+        $('#rarityList li a')
+            .click(function() {
+                $("#rarityText").text($(this).text());
+            });
 
         function requestCard() {
             $("#cardSearchResults").empty();
             var inputText = $("#cardSearchInput").val();
-            $.ajax("/api/card/" + encodeURIComponent(inputText),
-            {
-                success: function (result) {
-                    result.cards.forEach(function(card) {
-                        displayReturnedCard(card);
-                    });
-                    return false;
-                },
-                error: function (result) {
-                    console.error(result);
+
+            //get the advanced settings
+            var cmcText = $("#cmcInput").val();
+            var powerText = $("#powerInput").val();
+            var toughnessText = $("#toughnessInput").val();
+            var rarityText = $("#rarityText").text();
+
+            //Card Colour settings
+            var advancedSettings = {};
+            if ($("#blackCheckbox").is(':checked')) {
+                advancedSettings.isBlack = true;
+            }
+            if ($("#whiteCheckbox").is(':checked')) {
+                advancedSettings.isWhite = true;
+            }
+            if ($("#redCheckbox").is(':checked')) {
+                advancedSettings.isRed = true;
+            }
+            if ($("#blueCheckbox").is(':checked')) {
+                advancedSettings.isBlue = true;
+            }
+            if ($("#greenCheckbox").is(':checked')) {
+                advancedSettings.isGreen = true;
+            }
+
+            //Card Rarity
+            if (rarityText !== "Any") {
+                advancedSettings.rarity = rarityText;
+            }
+
+            //Cmc
+            if (cmcText !== undefined && cmcText !== null && cmcText !== "") {
+                advancedSettings.cmc = cmcText;
+
+                var cmcOperator = $("#cmcText").text();
+                if (cmcOperator !== "Equals") {
+                    advancedSettings.cmcOperator = cmcOperator;
+                }
+            }
+
+            //power
+            if (powerText !== undefined && powerText !== null && powerText !== "") {
+                advancedSettings.power = powerText;
+
+                var powerOperator = $("#powerText").text();
+                if (powerOperator !== "Equals") {
+                    advancedSettings.powerOperator = powerOperator;
+                }
+            }
+
+            //toughness
+            if (toughnessText !== undefined && toughnessText !== null && toughnessText !== "") {
+                advancedSettings.power = toughnessText;
+
+                var toughnessOperator = $("#toughnessText").text();
+                if (toughnessOperator !== "Equals") {
+                    advancedSettings.powerOperator = toughnessOperator;
+                }
+            }
+
+            //see which Ajax call to make
+            if (Object.keys(advancedSettings).length === 0) {
+                if (!$.trim(inputText).length) {
                     return false;
                 }
-            });
+                //basic GET request
+                $.ajax("/api/card/" + encodeURIComponent(inputText),
+                {
+                    success: function(result) {
+                        result.cards.forEach(function(card) {
+                            displayReturnedCard(card);
+                        });
+                        return false;
+                    },
+                    error: function(result) {
+                        console.error(result);
+                        return false;
+                    }
+                });
+            } else {
+                var requestUrl = "/api/card/";
+                if ($.trim(inputText).length) {
+                    requestUrl = requestUrl + encodeURIComponent(inputText);
+                }
+                //POST request with advanced settings
+                $.ajax({
+                    type: "POST",
+                    url: requestUrl,
+                    contentType: 'application/json',
+                    data: JSON.stringify(advancedSettings),
+                    success: function(result) {
+                        result.cards.forEach(function(card) {
+                            displayReturnedCard(card);
+                        });
+                        return false;
+                    },
+                    error: function(result) {
+                        console.error(result);
+                        return false;
+                    }
+                });
+                return false;
+            }
         }
 
         function displayReturnedCard(card) {
             if (card.name === null || card.name === undefined) return null;
-            $('<p>', {
-                text: card.name
-            }).appendTo("#cardSearchResults");
+            $('<p>',
+                {
+                    text: card.name
+                })
+                .appendTo("#cardSearchResults");
         }
     </script>
 }

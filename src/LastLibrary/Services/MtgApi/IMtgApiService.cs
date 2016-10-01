@@ -10,6 +10,7 @@ namespace LastLibrary.Services.MtgApi
 {
     public interface IMtgApiService
     {
-        Task<CardsModel> SearchForCardsByName(string cardName);
+        CardsModel SearchForCards(string cardName);
+        CardsModel SearchForCards(string cardName, CardSearchOptionsModel cardOpts);
     }
 }
