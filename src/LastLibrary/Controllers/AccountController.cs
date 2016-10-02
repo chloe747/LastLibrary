@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -54,12 +55,32 @@ namespace LastLibrary.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
+            var emailValidator = new EmailAddressAttribute();
+            var userSigninString = model.UsernameOrEmail;
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
+
+                //see if the user entered a username or email
+                if (emailValidator.IsValid(userSigninString))
+                {
+                    //get the users email if they entered in thier username
+                    var user = await _userManager.FindByEmailAsync(userSigninString);
+
+                    //if we don't find a user
+                    if (user == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                        return View(model);
+                    }                
+
+                    //else, set the signin string to the user's email
+                    userSigninString = user.UserName;
+                }
+
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(userSigninString, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation(1, "User logged in.");
