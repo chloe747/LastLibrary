@@ -10,6 +10,6 @@ namespace LastLibrary.Services.Firebase
 {
     public interface IFirebaseService
     {
-        Task<HttpStatusCode> WriteToFirebase(Deck deck);
+        Task<HttpStatusCode> WriteToFirebase(DeckModel deckModel);
     }
 }

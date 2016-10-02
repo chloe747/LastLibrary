@@ -48,11 +48,11 @@ namespace LastLibrary.Controllers
         // POST: DeckManager/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(Deck deck)
+        public async Task<ActionResult> Create(DeckModel deckModel)
         {
             try
             {
-                var response = await FirebaseService.WriteToFirebase(deck);
+                var response = await FirebaseService.WriteToFirebase(deckModel);
 
                 return RedirectToAction("Index");
             }

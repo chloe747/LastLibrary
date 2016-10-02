@@ -33,7 +33,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">
-                    <img alt="Last Library - Deck Builder" src="~/images/logo.png">
+                    <img alt="Last Library - DeckModel Builder" src="~/images/logo.png">
                 </a>
             </div>
             <div class="navbar-collapse collapse">
@@ -42,7 +42,7 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">BROWSE</a></li>
                     @if (SignInManager.IsSignedIn(User))
                     {
-                        <li><a asp-area="" asp-controller="DeckManager" asp-action="Index">Deck Manager</a></li>
+                        <li><a asp-area="" asp-controller="DeckManager" asp-action="Index">DeckModel Manager</a></li>
                     }
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")

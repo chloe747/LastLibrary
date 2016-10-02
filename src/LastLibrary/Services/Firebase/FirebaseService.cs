@@ -27,9 +27,9 @@ namespace LastLibrary.Services.Firebase
             FirebaseClient = new FirebaseClient(config);
         }
 
-        public async Task<HttpStatusCode> WriteToFirebase(Deck deck)
+        public async Task<HttpStatusCode> WriteToFirebase(DeckModel deckModel)
         {
-            PushResponse response = await FirebaseClient.PushAsync("decks/set", deck);
+            PushResponse response = await FirebaseClient.PushAsync("decks", deckModel);
 
             return response.StatusCode;
         }
