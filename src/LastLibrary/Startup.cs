@@ -66,7 +66,7 @@ namespace LastLibrary
             services.AddSingleton<INoSqlService, MongoDbService>();
 
             //Add the MtgApi service
-            services.Configure<MtgApiconfiguration>(Configuration.GetSection("MtgApi"));
+            services.Configure<MtgApiConfiguration>(Configuration.GetSection("MtgApi"));
             services.AddSingleton<IMtgApiService, MtgApiService>();
         }
 
