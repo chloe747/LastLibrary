@@ -15,7 +15,7 @@ namespace LastLibrary.Services.MtgApi
     {
         private string CardsUrl { get; }
 
-        public MtgApiService(IOptions<MtgApiSettings> settings)
+        public MtgApiService(IOptions<MtgApiConfiguration> settings)
         {
             CardsUrl = settings.Value.Urls.Cards;
         }
