@@ -1,11 +1,11 @@
 ﻿namespace LastLibrary.Models.ConfigurationModels
 {
-    public class MtgApiSettings
+    public class MtgApiconfiguration
     {
-        public Urls Urls { get; set; }
+        public MtgApiconfigurationUrls Urls { get; set; }
     }
 
-    public class Urls
+    public class MtgApiconfigurationUrls
     {
         public string Cards { get; set; }
         public string Sets { get; set; }

@@ -12,8 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using LastLibrary.Data;
 using LastLibrary.Models;
+using LastLibrary.Models.ConfigurationModels;
 using LastLibrary.Services;
-using LastLibrary.Services.Firebase;
+using LastLibrary.Services.MongoDb;
 using LastLibrary.Services.MtgApi;
 
 namespace LastLibrary
@@ -62,11 +63,11 @@ namespace LastLibrary
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
             //Add the Firebase Service
-            services.Configure<FirebaseAppSettingsModel>(Configuration.GetSection("Firebase"));
-            services.AddSingleton<IFirebaseService, FirebaseService>();
+            services.Configure<MongoDbConfigurationModel>(Configuration.GetSection("mongoDb"));
+            services.AddSingleton<INoSqlService, MongoDbService>();
 
             //Add the MtgApi service
-            services.Configure<MtgApiSettings>(Configuration.GetSection("MtgApi"));
+            services.Configure<MtgApiconfiguration>(Configuration.GetSection("MtgApi"));
             services.AddSingleton<IMtgApiService, MtgApiService>();
         }
 

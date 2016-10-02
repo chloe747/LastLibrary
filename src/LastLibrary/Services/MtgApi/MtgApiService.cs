@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using LastLibrary.Models;
+using LastLibrary.Models.ConfigurationModels;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
