@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using FireSharp.Interfaces;
 using LastLibrary.Models.DeckManagerViewModel;
 
-namespace LastLibrary.Services.Firebase
+namespace LastLibrary.Services
 {
-    public interface IFirebaseService
+    public interface INoSqlService
     {
-        Task<HttpStatusCode> WriteToFirebase(DeckModel deckModel);
+        HttpStatusCode WriteDeck(DeckModel deckModel);
     }
 }

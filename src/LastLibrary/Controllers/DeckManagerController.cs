@@ -4,20 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using FireSharp.Interfaces;
 using LastLibrary.Models.DeckManagerViewModel;
-using LastLibrary.Services.Firebase;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 namespace LastLibrary.Controllers
 {
     public class DeckManagerController : Controller
     {
-
-        private IFirebaseService FirebaseService { get; }
-
-        public DeckManagerController(IFirebaseService firebaseService)
-        {
-            FirebaseService = firebaseService;
-        }
 
         // GET: DeckManager
         public ActionResult Index()
@@ -48,11 +40,10 @@ namespace LastLibrary.Controllers
         // POST: DeckManager/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(DeckModel deckModel)
+        public ActionResult Create(DeckModel deckModel)
         {
             try
             {
-                var response = await FirebaseService.WriteToFirebase(deckModel);
 
                 return RedirectToAction("Index");
             }

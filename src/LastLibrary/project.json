@@ -33,7 +33,6 @@
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
-    "FireSharp": "2.0.4",
     "Microsoft.AspNetCore.Mvc": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
@@ -45,7 +44,8 @@
       "version": "1.0.0",
       "type": "platform" 
     },
-    "Microsoft.NETCore.Portable.Compatibility": "1.0.1"
+    "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
+    "MongoDB.Driver": "2.3.0"
   },
 
   "tools": {

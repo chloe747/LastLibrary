@@ -1,4 +1,4 @@
-﻿namespace LastLibrary.Models
+﻿namespace LastLibrary.Models.ConfigurationModels
 {
     public class FirebaseAppSettingsModel
     {

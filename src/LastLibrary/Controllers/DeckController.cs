@@ -5,7 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using LastLibrary.Models;
 using LastLibrary.Models.DeckManagerViewModel;
-using LastLibrary.Services.Firebase;
+using LastLibrary.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +17,12 @@ namespace LastLibrary.Controllers
     public class DeckController : Controller
     {
         private readonly UserManager<ApplicationUser> UserManager;
-        private IFirebaseService FirebaseService { get; }
+        private INoSqlService NoSqlService { get; }
 
-        public DeckController(UserManager<ApplicationUser> userManager, IFirebaseService firebaseService)
+        public DeckController(UserManager<ApplicationUser> userManager, INoSqlService noSqlService)
         {
             UserManager = userManager;
-            FirebaseService = firebaseService;
+            NoSqlService = noSqlService;
         }
 
         /**
@@ -49,7 +49,15 @@ namespace LastLibrary.Controllers
             //TODO: Implement how to send card model data from the front end to the back end
 
             //write the deck out to firebase
-            return await FirebaseService.WriteToFirebase(deckModel);
+            return NoSqlService.WriteDeck(deckModel);
         }
+
+        [HttpGet]
+        [Route("api/Deck/User/{userName}")]
+        public HttpResponse GetDecksForUser(string userName)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
