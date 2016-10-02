@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace LastLibrary.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Deck")]
     public class DeckController : Controller
     {
         private readonly UserManager<ApplicationUser> UserManager;
@@ -29,6 +29,7 @@ namespace LastLibrary.Controllers
          * Route used to save a new deckModel
          */
         [HttpPost]
+        [Route("api/Deck")]
         public async Task<HttpStatusCode> Post([FromBody] DeckModel deckModel)
         {
             //if the request has an invalid body
@@ -53,10 +54,39 @@ namespace LastLibrary.Controllers
         }
 
         [HttpGet]
-        [Route("api/Deck/User/{userName}")]
-        public HttpResponse GetDecksForUser(string userName)
+        [Route("api/Deck")]
+        public async Task<ICollection<DeckModel>> GetDecksForUser()
         {
-            throw new NotImplementedException();
+            //make sure the user is logged in
+            //            if (!User.Identity.IsAuthenticated)
+            //            {
+            //                return HttpStatusCode.Forbidden;
+            //            }
+
+            //get the username
+            var user = await UserManager.GetUserAsync(HttpContext.User);
+
+            //set the Creator to the current user
+            var userName = (user == null) ? "Postman Test" : user.UserName;
+            
+            //get the decks from mongoDb
+            return NoSqlService.GetDecksForUser(userName);
+        }
+
+        [HttpGet]
+        [Route("api/Deck/{deckName}")]
+        public ICollection<DeckModel> GetDecksByDeckName(string deckName)
+        {
+            //get the decks from mongoDb
+            return NoSqlService.GetDecksByDeckName(Uri.UnescapeDataString(deckName));
+        }
+
+        [HttpGet]
+        [Route("api/Deck/{userName}/{deckName}")]
+        public ICollection<DeckModel> GetDecksByUserNameAndDeckName(string userName, string deckName)
+        {
+            //get the decks from mongoDb
+            return NoSqlService.GetDecksByUserNameAndDeckName(Uri.UnescapeDataString(userName), Uri.UnescapeDataString(deckName));
         }
 
     }
