@@ -8,226 +8,131 @@
     <div class="col-md-12">
         <div class="container-left col-md-6">
             <h1-custom>Search</h1-custom>
-            <form class="card-search">
-                <div class="form-group">
-                    <label for="cardName">Card Name</label>
-                    <input type="text" placeholder="card name" id="cardName" class="input-big">
-                </div>
-
-                <label>Colours</label>
-                <div class="form-group">
-                    <label class="checkbox-inline">
-                        <input type="checkbox" value="black"> Black
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" value="white"> White
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" value="blue"> Blue
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" value="green"> Green
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" value="red"> Red
-                    </label>
-                </div>
-                
-                <div class="form-group">
-                    <label for="power">Power</label>
-                    <input type="text" placeholder="2" id="power" class="small-input">
-                </div>
-                
-                <div class="form-group">
-                    <label for="toughness">Toughness</label>
-                    <input type="text" placeholder="2" id="toughness" class="small-input">
-                </div>
-                
-                <div class="form-group">
-                    <label for="mana">Converted Mana Cost</label>
-                    <input type="text" placeholder="2" id="mana" class="small-input">
-                </div>
-                
-              
-                    <label>Card Rarity</label>
-                    <div class="dropdown">
-                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                            <span id="rarityText">Any</span>
-                            <span class="caret"></span>
-                        </button>
-                        <ul id="rarityList" class="dropdown-menu">
-                            <li>
-                                <a href="#">Any</a>
-                            </li>
-                            <li>
-                                <a href="#">Common</a>
-                            </li>
-                            <li>
-                                <a href="#">Uncommon</a>
-                            </li>
-                            <li>
-                                <a href="#">Rare</a>
-                            </li>
-                            <li>
-                                <a href="#">Mythic Rare</a>
-                            </li>
-                        </ul>
+            <div id="cardSearchForm">
+                <form class="card-search">
+                    <div class="form-group">
+                        <label for="cardName" id="cardNameLabel">Card Name</label>
+                        <input type="text" placeholder="card name" id="cardName" class="input-big">
                     </div>
-            
+
+                    <label id="colourLabel">Colours</label>
+                    <div class="form-group">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="black" id="colourBlack"> Black
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="white" id="colourWhite"> White
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="blue" id="colourBlue"> Blue
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="green" id="colourGreen"> Green
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" value="red" id="colourRed"> Red
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="power" if="powerLabel">Power</label>
+                        <input type="text" placeholder="2" id="power" class="small-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="toughness" id="toughnessLabel">Toughness</label>
+                        <input type="text" placeholder="2" id="toughness" class="small-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mana" id="manaLabel">Converted Mana Cost</label>
+                        <input type="text" placeholder="2" id="mana" class="small-input">
+                    </div>
+
+
+                    <label id="raritylabel">Card Rarity</label>
+                    <select id="rarity">
+                        <option value="Any" selected>Any</option>
+                        <option value="Common">Common</option>
+                        <option value="Uncommon">Uncommon</option>
+                        <option value="Rare">Rare</option>
+                        <option value="Mythic Rare">Mythic Rare</option>
+                    </select>
+
 
                     <div class="submitButton">
                         <button id="cardSearchButton" class="btn btn-default">Search</button>
                     </div>
 
-            </form>
-            <h1-custom>Your DeckModel</h1-custom>
+                </form>
+            </div>
+            <h1-custom>Your Deck</h1-custom>
            
 
         </div>
         <div class="container-right col-md-">
             <h1-custom>Search Result</h1-custom>
+            <div id="cardSearchResults"></div>
 
         </div>
     </div>
 
+@section scripts{
+    <script type="text/javascript">
+    $(function() {
+        $("#cardSearchButton")
+            .click(function() {
+                var cardName = $("#cardName").val();
+                var black = $("#colourBlack").is(":checked");
+                var white = $("#colourWhite").is(":checked");
+                var blue = $("#colourBlue").is(":checked");
+                var green = $("#colourGreen").is(":checked");
+                var red = $("#colourRed").is(":checked");
+                var power = $("#power").val();
+                var toughness = $("#toughness").val();
+                var mana = $("#mana").val();
+                var rarity = $("#rarity").val();
 
-@*<div id="cardSearch">*@
-@*    <h4>Search for a Card</h4>*@
-@*    <hr/>*@
-@*    <label class="col-md-2 control-label">Card Name:</label>*@
-@*    <div class="col-md-10">*@
-@*        <input id="cardSearchInput" class="form-control"/>*@
-@*    </div>*@
-@*    <label class="col-md-2 control-label">Card Options:</label>*@
-@*    <div class="col-md-10">*@
-@*        <div>*@
-@*            <label class="checkbox-inline">*@
-@*                <input type="checkbox" id="blackCheckbox" value=""> Black*@
-@*            </label>*@
-@*            <label class="checkbox-inline">*@
-@*                <input type="checkbox" id="whiteCheckbox" value=""> White*@
-@*            </label>*@
-@*            <label class="checkbox-inline">*@
-@*                <input type="checkbox" id="blueCheckbox" value=""> Blue*@
-@*            </label>*@
-@*            <label class="checkbox-inline">*@
-@*                <input type="checkbox" id="greenCheckbox" value=""> Green*@
-@*            </label>*@
-@*            <label class="checkbox-inline">*@
-@*                <input type="checkbox" id="redCheckbox" value=""> Red*@
-@*            </label>*@
-@*        </div>*@
-@*        <div>*@
-@*            <h4>Power Settings</h4>*@
-@*            <div class="dropdown">*@
-@*                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">*@
-@*                    <span id="powerText">Equals</span>*@
-@*                    <span class="caret"></span>*@
-@*                </button>*@
-@*                <ul id="powerList" class="dropdown-menu">*@
-@*                    <li>*@
-@*                        <a href="#">Equals</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">gt</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">gte</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">lt</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">lte</a>*@
-@*                    </li>*@
-@*                </ul>*@
-@*                <input id="powerInput" class="form-control"/>*@
-@*            </div>*@
-@*        </div>*@
-@*        <div>*@
-@*            <h4>Toughness Settings</h4>*@
-@*            <div class="dropdown">*@
-@*                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">*@
-@*                    <span id="toughnessText">Equals</span>*@
-@*                    <span class="caret"></span>*@
-@*                </button>*@
-@*                <ul id="toughnessList" class="dropdown-menu">*@
-@*                    <li>*@
-@*                        <a href="#">Equals</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">gt</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">Ggte</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">lt</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">lte</a>*@
-@*                    </li>*@
-@*                </ul>*@
-@*                <input id="toughnessInput" class="form-control"/>*@
-@*            </div>*@
-@*        </div>*@
-@*        <div>*@
-@*            <h4>Converted Mana Cost Settings</h4>*@
-@*            <div class="dropdown">*@
-@*                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">*@
-@*                    <span id="cmcText">Equals</span>*@
-@*                    <span class="caret"></span>*@
-@*                </button>*@
-@*                <ul id="cmcList" class="dropdown-menu">*@
-@*                    <li>*@
-@*                        <a href="#">Equals</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">gt</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">gte</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">lt</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">lte</a>*@
-@*                    </li>*@
-@*                </ul>*@
-@*                <input id="cmcInput" class="form-control"/>*@
-@*            </div>*@
-@*        </div>*@
-@*        <div>*@
-@*            <h4>Card Rarity Settings</h4>*@
-@*            <div class="dropdown">*@
-@*                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">*@
-@*                    <span id="rarityText">Any</span>*@
-@*                    <span class="caret"></span>*@
-@*                </button>*@
-@*                <ul id="rarityList" class="dropdown-menu">*@
-@*                    <li>*@
-@*                        <a href="#">Any</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">Common</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">Uncommon</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">Rare</a>*@
-@*                    </li>*@
-@*                    <li>*@
-@*                        <a href="#">Mythic Rare</a>*@
-@*                    </li>*@
-@*                </ul>*@
-@*            </div>*@
-@*        </div>*@
-@*    </div>*@
-@*    <button id="cardSearchButton" class="btn btn-default">Search for Card</button>*@
-@*</div>*@
-@**@
+                var dataJSON =
+                    {
+                        "isblue": blue,
+                        "isRed": red,
+                        "isGreen": green,
+                        "iswhite": white,
+                        "isblack": black,
+                        "isColorless": false,
+                        "Power": power,
+                        "Toughness": toughness,
+                        "Cmc": mana,
+                        "CmcOperator": "",
+                        "rarity": rarity
+                    }
+                alert(dataJSON);
+                $.ajax({
+                    type: "POST",
+                    url: "api/card/" + cardName,
+                    contentType: 'application/json',
+                    data: JSON.stringify(dataJSON),
+                    success: function () {
+                        $('#cardSearchResults').html("div id='result'>Hello</div>");
+                    }
+                });
+                return false;
+            });
+        });
+
+        function displayReturnedCard(card) {
+            if (card.name === null || card.name === undefined) return null;
+            $('<p>',
+                {
+                    text: card.name
+                })
+                .appendTo("#cardSearchResults");
+        }
+    </script>
+}
+
+
 @*<div id="cardSearchResults"></div>*@
 @**@
 @*@section scripts{*@
