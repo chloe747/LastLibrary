@@ -70,64 +70,120 @@
            
 
         </div>
-        <div class="container-right col-md-">
+        <div class="container-right col-md-6">
             <h1-custom>Search Result</h1-custom>
-            <div id="cardSearchResults"></div>
+            <div id="cardSearchResults" class="cardSearchResults"></div>
 
         </div>
     </div>
 
 @section scripts{
     <script type="text/javascript">
-    $(function() {
-        $("#cardSearchButton")
-            .click(function() {
-                var cardName = $("#cardName").val();
-                var black = $("#colourBlack").is(":checked");
-                var white = $("#colourWhite").is(":checked");
-                var blue = $("#colourBlue").is(":checked");
-                var green = $("#colourGreen").is(":checked");
-                var red = $("#colourRed").is(":checked");
-                var power = $("#power").val();
-                var toughness = $("#toughness").val();
-                var mana = $("#mana").val();
-                var rarity = $("#rarity").val();
-
-                var dataJSON =
-                    {
-                        "isblue": blue,
-                        "isRed": red,
-                        "isGreen": green,
-                        "iswhite": white,
-                        "isblack": black,
-                        "isColorless": false,
-                        "Power": power,
-                        "Toughness": toughness,
-                        "Cmc": mana,
-                        "CmcOperator": "",
-                        "rarity": rarity
-                    }
-                alert(dataJSON);
-                $.ajax({
-                    type: "POST",
-                    url: "api/card/" + cardName,
-                    contentType: 'application/json',
-                    data: JSON.stringify(dataJSON),
-                    success: function () {
-                        $('#cardSearchResults').html("div id='result'>Hello</div>");
-                    }
+        $(function() {
+            //apply click handler to the submit button
+            $("#cardSearchButton")
+                .click(function(e) {
+                    e.preventDefault();
+                    requestCards(e);
                 });
-                return false;
-            });
+
+            //apply the enter key handler on the card name field
+            $('#cardName')
+                .on('keypress',
+                    function(e) {
+                        if (e.keyCode === 13) {
+                            e.preventDefault();
+                            requestCards(e);
+                        }
+                    });
         });
 
-        function displayReturnedCard(card) {
-            if (card.name === null || card.name === undefined) return null;
-            $('<p>',
-                {
-                    text: card.name
-                })
-                .appendTo("#cardSearchResults");
+        function requestCards() {
+            //get the card name
+            var cardName = $("#cardName").val();
+
+            //get the appropriate value for the rarity
+            var rarity = $("#rarity").val();
+            if (rarity.toUpperCase() === 'ANY') {
+                rarity = null;
+            }
+
+            //create the request object
+            var requestContent = {
+                "isblue": $("#colourBlue").is(":checked"),
+                "isRed": $("#colourRed").is(":checked"),
+                "isGreen": $("#colourGreen").is(":checked"),
+                "iswhite": $("#colourWhite").is(":checked"),
+                "isblack": $("#colourBlack").is(":checked"),
+                "power": $("#power").val(),
+                "toughness": $("#toughness").val(),
+                "cmc": $("#mana").val(),
+                "rarity": rarity
+            };
+
+            //send the Ajax call to the server
+            $.ajax({
+                type: "POST",
+                url: "api/card/" + cardName,
+                contentType: 'application/json',
+                data: JSON.stringify(requestContent),
+                success: function (response) {
+                    //remove the previous search results
+                    var cardSearchResultsElement = $("#cardSearchResults");
+                    cardSearchResultsElement.empty();
+
+                    //create and append the response to the results area
+                    response.cards.forEach(function (result) {
+                        
+                        //create the card element using the resulting card data
+                        var cardElement = createCardElement(result);
+
+                        //if we didn't get an element back, continue on to the next element
+                        if (cardElement === null || cardElement === undefined) return;
+
+                        //otherwise, append the card element to the results section
+                        cardElement.appendTo(cardSearchResultsElement);
+                    });
+                }
+            });
+            return false;
+
         }
+
+        /**
+         * Function that creates DOM elements to display a magic the gathering card using the data passed into the function
+         * 
+         * @@param {object} cardData - The card data used to display a M:tG card
+         * 
+         * @@returns {element} - A DOM element that will contain the overall card element
+         */
+        function createCardElement(cardData) {
+            //check to see if we get an image URL, if we don't, then don't bother displaying the card
+            if (cardData.imageUrl === undefined || cardData.imageUrl === null) return null;
+
+            //otherwise, create the card elements
+            var containingDiv = $("<div />",
+            {
+                "class": "cardResult noSelect"
+            });
+            var image = $("<img />",
+            {
+                src: cardData.imageUrl,
+                alt: cardData.name + " Image",
+                "class": "card"
+            });
+            var plusIcon = $("<div />",
+            {
+                "class": "cardAddToResults"
+            });
+
+            //append the elements together
+            image.appendTo(containingDiv);
+            plusIcon.appendTo(containingDiv);
+
+            //return the final result
+            return containingDiv;
+        }
+
     </script>
 }

@@ -121,3 +121,34 @@ select {
     border-radius: 4px;
 }
 
+.cardSearchResults {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.cardResult {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    max-width: 45%;
+    margin: 10px 0 0 0;
+}
+
+.card {
+    max-width: 80%;
+    height: auto;
+}
+
+.cardAddToResults {
+    height: 40px;
+    width: 40px;
+    background-color: hotpink;
+}
+
+.noSelect {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
