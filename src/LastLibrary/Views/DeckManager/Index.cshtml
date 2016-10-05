@@ -67,223 +67,192 @@
                 </form>
             </div>
             <h1-custom>Your Deck</h1-custom>
+            <div id="currentDeck"></div>
            
 
         </div>
-        <div class="container-right col-md-">
+        <div class="container-right col-md-6">
             <h1-custom>Search Result</h1-custom>
-            <div id="cardSearchResults"></div>
+            <div id="cardSearchResults" class="cardSearchResults"></div>
 
         </div>
     </div>
 
 @section scripts{
     <script type="text/javascript">
-    $(function() {
-        $("#cardSearchButton")
-            .click(function() {
-                var cardName = $("#cardName").val();
-                var black = $("#colourBlack").is(":checked");
-                var white = $("#colourWhite").is(":checked");
-                var blue = $("#colourBlue").is(":checked");
-                var green = $("#colourGreen").is(":checked");
-                var red = $("#colourRed").is(":checked");
-                var power = $("#power").val();
-                var toughness = $("#toughness").val();
-                var mana = $("#mana").val();
-                var rarity = $("#rarity").val();
+        $(function() {
+            //create the LastLibrary namespace to store deck state
+            if( window.LASTLIBRARY === undefined || window.LASTLIBRARY === null ) window.LASTLIBRARY = {};
 
-                var dataJSON =
-                    {
-                        "isblue": blue,
-                        "isRed": red,
-                        "isGreen": green,
-                        "iswhite": white,
-                        "isblack": black,
-                        "isColorless": false,
-                        "Power": power,
-                        "Toughness": toughness,
-                        "Cmc": mana,
-                        "CmcOperator": "",
-                        "rarity": rarity
-                    }
-                alert(dataJSON);
-                $.ajax({
-                    type: "POST",
-                    url: "api/card/" + cardName,
-                    contentType: 'application/json',
-                    data: JSON.stringify(dataJSON),
-                    success: function () {
-                        $('#cardSearchResults').html("div id='result'>Hello</div>");
-                    }
+            //create a variable to track deck building data
+            window.LASTLIBRARY.deckBuilder = {
+                deckName: '',
+                cards: {}
+            };
+
+            //apply click handler to the submit button
+            $("#cardSearchButton")
+                .click(function(e) {
+                    e.preventDefault();
+                    requestCards(e);
                 });
-                return false;
-            });
+
+            //apply the enter key handler on the card name field
+            $('#cardName')
+                .on('keypress',
+                    function(e) {
+                        if (e.keyCode === 13) {
+                            e.preventDefault();
+                            requestCards(e);
+                        }
+                    });
         });
 
-        function displayReturnedCard(card) {
-            if (card.name === null || card.name === undefined) return null;
-            $('<p>',
-                {
-                    text: card.name
-                })
-                .appendTo("#cardSearchResults");
+        /**
+         * Function that gathers the currently entered form data, stores the data in a JSON and sends a request to the
+         * card API hosted on our back-end.
+         */
+        function requestCards() {
+            //get the card name
+            var cardName = $("#cardName").val();
+
+            //get the appropriate value for the rarity
+            var rarity = $("#rarity").val();
+            if (rarity.toUpperCase() === 'ANY') {
+                rarity = null;
+            }
+
+            //create the request object
+            var requestContent = {
+                "isblue": $("#colourBlue").is(":checked"),
+                "isRed": $("#colourRed").is(":checked"),
+                "isGreen": $("#colourGreen").is(":checked"),
+                "iswhite": $("#colourWhite").is(":checked"),
+                "isblack": $("#colourBlack").is(":checked"),
+                "power": $("#power").val(),
+                "toughness": $("#toughness").val(),
+                "cmc": $("#mana").val(),
+                "rarity": rarity
+            };
+
+            //send the Ajax call to the server
+            $.ajax({
+                type: "POST",
+                url: "api/card/" + cardName,
+                contentType: 'application/json',
+                data: JSON.stringify(requestContent),
+                success: function(response) {
+                    //remove the previous search results
+                    var cardSearchResultsElement = $("#cardSearchResults");
+                    cardSearchResultsElement.empty();
+
+                    //create and append the response to the results area
+                    response.cards.forEach(function(result) {
+
+                        //create the card element using the resulting card data
+                        var cardElement = createCardElement(result);
+
+                        //if we didn't get an element back, continue on to the next element
+                        if (cardElement === null || cardElement === undefined) return;
+
+                        //otherwise, append the card element to the results section
+                        cardElement.appendTo(cardSearchResultsElement);
+                    });
+                }
+            });
+            return false;
+
         }
+
+        /**
+         * Function that creates DOM elements to display a magic the gathering card using the data passed into the function
+         * 
+         * @@param {object} cardData - The card data used to display a M:tG card
+         * 
+         * @@returns {element} - A DOM element that will contain the overall card element
+         */
+        function createCardElement(cardData) {
+            //check to see if we get an image URL, if we don't, then don't bother displaying the card
+            if (cardData.imageUrl === undefined || cardData.imageUrl === null) return null;
+
+            //otherwise, create the card elements
+            var containingDiv = $("<div />",
+            {
+                "class": "cardResult noSelect"
+            });
+            var image = $("<img />",
+            {
+                src: cardData.imageUrl,
+                alt: cardData.name + " Image",
+                "class": "card"
+            });
+            var plusIcon = $("<div />",
+            {
+                "class": "cardAddToResults"
+            });
+
+            //append the elements together
+            image.appendTo(containingDiv);
+            plusIcon.appendTo(containingDiv);
+
+            //bind a Jquery .on click event to the plusIcon, and bind the card data to the icon
+            plusIcon.on("click",
+                cardData,
+                function(e) {
+                    addCardToDeckBuilder(e.data);
+                    printCardsInDeckBuilder();
+                });
+
+            //return the final result
+            return containingDiv;
+        }
+
+        /**
+         * A function that adds a card to the deck builder's global state. if the card already exists, increment the card about by +1
+         * 
+         * @@param {object} cardData - the data object for the card to be stored 
+         */
+        function addCardToDeckBuilder(cardData) {
+            var cardId = cardData.multiverseId.toString();
+
+            //when we get the card, check to see if the card already exists in the deck builder by checking the card's unique multiverse ID
+            if (window.LASTLIBRARY.deckBuilder.cards[cardId] === undefined ||
+                window.LASTLIBRARY.deckBuilder.cards[cardId] === null) {
+                //create the object for the new multiverse ID
+                window.LASTLIBRARY.deckBuilder.cards[cardId] = {};
+
+                //add the new card to the deck builder and set the amount to 1
+                window.LASTLIBRARY.deckBuilder.cards[cardId].card = cardData;
+
+                //set the amount of cards that exist to 1
+                window.LASTLIBRARY.deckBuilder.cards[cardId].amount = 1;
+            } else {
+                //otherwise, just increment the amount of cards by 1
+                window.LASTLIBRARY.deckBuilder.cards[cardId].amount++;
+            }
+        }
+
+        /**
+         * A function that will print out all the cards in the deckbuilder variable in the LASTLIBRARY namespace
+         */
+        function printCardsInDeckBuilder() {
+            //make sure we have card data, otherwise return
+            if (window.LASTLIBRARY.deckBuilder.cards === undefined ||
+                window.LASTLIBRARY.deckBuilder.cards === null ||
+                Object.keys(window.LASTLIBRARY.deckBuilder.cards).length === 0) return null;
+
+            //delete the current data in the 'current deck' section
+            $("#currentDeck").empty();
+
+            //iterate over all the cards in the current deckbuilder object and append them to the cards in deck section in the page
+            $.each(window.LASTLIBRARY.deckBuilder.cards, function (cardName, cardObject) {
+                $("<p />",
+                {
+                    text: cardObject.card.name + " x" + cardObject.amount
+                }).appendTo( $("#currentDeck") );
+            });
+            return false;
+        }
+
     </script>
 }
-
-
-@*<div id="cardSearchResults"></div>*@
-@**@
-@*@section scripts{*@
-@*    <script type="text/javascript">*@
-@*        $('#cardSearchInput')*@
-@*            .keypress(function(e) {*@
-@*                if (e.which === 13) {*@
-@*                    e.preventDefault();*@
-@*                    requestCard();*@
-@*                }*@
-@*            });*@
-@**@
-@*        $('#cardSearchButton')*@
-@*            .click(function(e) {*@
-@*                e.preventDefault();*@
-@*                requestCard();*@
-@*            });*@
-@**@
-@*        //setup dropdown clicks*@
-@*        $('#cmcList li a')*@
-@*            .click(function() {*@
-@*                $("#cmcText").text($(this).text());*@
-@*            });*@
-@*        $('#powerList li a')*@
-@*            .click(function() {*@
-@*                $("#powerText").text($(this).text());*@
-@*            });*@
-@*        $('#toughnessList li a')*@
-@*            .click(function() {*@
-@*                $("#toughnessText").text($(this).text());*@
-@*            });*@
-@*        $('#rarityList li a')*@
-@*            .click(function() {*@
-@*                $("#rarityText").text($(this).text());*@
-@*            });*@
-@**@
-@*        function requestCard() {*@
-@*            $("#cardSearchResults").empty();*@
-@*            var inputText = $("#cardSearchInput").val();*@
-@**@
-@*            //get the advanced settings*@
-@*            var cmcText = $("#cmcInput").val();*@
-@*            var powerText = $("#powerInput").val();*@
-@*            var toughnessText = $("#toughnessInput").val();*@
-@*            var rarityText = $("#rarityText").text();*@
-@**@
-@*            //Card Colour settings*@
-@*            var advancedSettings = {};*@
-@*            if ($("#blackCheckbox").is(':checked')) {*@
-@*                advancedSettings.isBlack = true;*@
-@*            }*@
-@*            if ($("#whiteCheckbox").is(':checked')) {*@
-@*                advancedSettings.isWhite = true;*@
-@*            }*@
-@*            if ($("#redCheckbox").is(':checked')) {*@
-@*                advancedSettings.isRed = true;*@
-@*            }*@
-@*            if ($("#blueCheckbox").is(':checked')) {*@
-@*                advancedSettings.isBlue = true;*@
-@*            }*@
-@*            if ($("#greenCheckbox").is(':checked')) {*@
-@*                advancedSettings.isGreen = true;*@
-@*            }*@
-@**@
-@*            //Card Rarity*@
-@*            if (rarityText !== "Any") {*@
-@*                advancedSettings.rarity = rarityText;*@
-@*            }*@
-@**@
-@*            //Cmc*@
-@*            if (cmcText !== undefined && cmcText !== null && cmcText !== "") {*@
-@*                advancedSettings.cmc = cmcText;*@
-@**@
-@*                var cmcOperator = $("#cmcText").text();*@
-@*                if (cmcOperator !== "Equals") {*@
-@*                    advancedSettings.cmcOperator = cmcOperator;*@
-@*                }*@
-@*            }*@
-@**@
-@*            //power*@
-@*            if (powerText !== undefined && powerText !== null && powerText !== "") {*@
-@*                advancedSettings.power = powerText;*@
-@**@
-@*                var powerOperator = $("#powerText").text();*@
-@*                if (powerOperator !== "Equals") {*@
-@*                    advancedSettings.powerOperator = powerOperator;*@
-@*                }*@
-@*            }*@
-@**@
-@*            //toughness*@
-@*            if (toughnessText !== undefined && toughnessText !== null && toughnessText !== "") {*@
-@*                advancedSettings.power = toughnessText;*@
-@**@
-@*                var toughnessOperator = $("#toughnessText").text();*@
-@*                if (toughnessOperator !== "Equals") {*@
-@*                    advancedSettings.powerOperator = toughnessOperator;*@
-@*                }*@
-@*            }*@
-@**@
-@*            //see which Ajax call to make*@
-@*            if (Object.keys(advancedSettings).length === 0) {*@
-@*                if (!$.trim(inputText).length) {*@
-@*                    return false;*@
-@*                }*@
-@*                //basic GET request*@
-@*                $.ajax("/api/card/" + encodeURIComponent(inputText),*@
-@*                {*@
-@*                    success: function(result) {*@
-@*                        result.cards.forEach(function(card) {*@
-@*                            displayReturnedCard(card);*@
-@*                        });*@
-@*                        return false;*@
-@*                    },*@
-@*                    error: function(result) {*@
-@*                        console.error(result);*@
-@*                        return false;*@
-@*                    }*@
-@*                });*@
-@*            } else {*@
-@*                var requestUrl = "/api/card/";*@
-@*                if ($.trim(inputText).length) {*@
-@*                    requestUrl = requestUrl + encodeURIComponent(inputText);*@
-@*                }*@
-@*                //POST request with advanced settings*@
-@*                $.ajax({*@
-@*                    type: "POST",*@
-@*                    url: requestUrl,*@
-@*                    contentType: 'application/json',*@
-@*                    data: JSON.stringify(advancedSettings),*@
-@*                    success: function(result) {*@
-@*                        result.cards.forEach(function(card) {*@
-@*                            displayReturnedCard(card);*@
-@*                        });*@
-@*                        return false;*@
-@*                    },*@
-@*                    error: function(result) {*@
-@*                        console.error(result);*@
-@*                        return false;*@
-@*                    }*@
-@*                });*@
-@*                return false;*@
-@*            }*@
-@*        }*@
-@**@
-@*        function displayReturnedCard(card) {*@
-@*            if (card.name === null || card.name === undefined) return null;*@
-@*            $('<p>',*@
-@*                {*@
-@*                    text: card.name*@
-@*                })*@
-@*                .appendTo("#cardSearchResults");*@
-@*        }*@
-@*    </script>*@
-@*}*@
