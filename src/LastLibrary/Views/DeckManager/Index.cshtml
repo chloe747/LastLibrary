@@ -67,6 +67,7 @@
                 </form>
             </div>
             <h1-custom>Your Deck</h1-custom>
+            <div id="currentDeck"></div>
            
 
         </div>
@@ -80,6 +81,15 @@
 @section scripts{
     <script type="text/javascript">
         $(function() {
+            //create the LastLibrary namespace to store deck state
+            if( window.LASTLIBRARY === undefined || window.LASTLIBRARY === null ) window.LASTLIBRARY = {};
+
+            //create a variable to track deck building data
+            window.LASTLIBRARY.deckBuilder = {
+                deckName: '',
+                cards: {}
+            };
+
             //apply click handler to the submit button
             $("#cardSearchButton")
                 .click(function(e) {
@@ -98,6 +108,10 @@
                     });
         });
 
+        /**
+         * Function that gathers the currently entered form data, stores the data in a JSON and sends a request to the
+         * card API hosted on our back-end.
+         */
         function requestCards() {
             //get the card name
             var cardName = $("#cardName").val();
@@ -127,14 +141,14 @@
                 url: "api/card/" + cardName,
                 contentType: 'application/json',
                 data: JSON.stringify(requestContent),
-                success: function (response) {
+                success: function(response) {
                     //remove the previous search results
                     var cardSearchResultsElement = $("#cardSearchResults");
                     cardSearchResultsElement.empty();
 
                     //create and append the response to the results area
-                    response.cards.forEach(function (result) {
-                        
+                    response.cards.forEach(function(result) {
+
                         //create the card element using the resulting card data
                         var cardElement = createCardElement(result);
 
@@ -181,8 +195,63 @@
             image.appendTo(containingDiv);
             plusIcon.appendTo(containingDiv);
 
+            //bind a Jquery .on click event to the plusIcon, and bind the card data to the icon
+            plusIcon.on("click",
+                cardData,
+                function(e) {
+                    addCardToDeckBuilder(e.data);
+                    printCardsInDeckBuilder();
+                });
+
             //return the final result
             return containingDiv;
+        }
+
+        /**
+         * A function that adds a card to the deck builder's global state. if the card already exists, increment the card about by +1
+         * 
+         * @@param {object} cardData - the data object for the card to be stored 
+         */
+        function addCardToDeckBuilder(cardData) {
+            var cardId = cardData.multiverseId.toString();
+
+            //when we get the card, check to see if the card already exists in the deck builder by checking the card's unique multiverse ID
+            if (window.LASTLIBRARY.deckBuilder.cards[cardId] === undefined ||
+                window.LASTLIBRARY.deckBuilder.cards[cardId] === null) {
+                //create the object for the new multiverse ID
+                window.LASTLIBRARY.deckBuilder.cards[cardId] = {};
+
+                //add the new card to the deck builder and set the amount to 1
+                window.LASTLIBRARY.deckBuilder.cards[cardId].card = cardData;
+
+                //set the amount of cards that exist to 1
+                window.LASTLIBRARY.deckBuilder.cards[cardId].amount = 1;
+            } else {
+                //otherwise, just increment the amount of cards by 1
+                window.LASTLIBRARY.deckBuilder.cards[cardId].amount++;
+            }
+        }
+
+        /**
+         * A function that will print out all the cards in the deckbuilder variable in the LASTLIBRARY namespace
+         */
+        function printCardsInDeckBuilder() {
+            //make sure we have card data, otherwise return
+            if (window.LASTLIBRARY.deckBuilder.cards === undefined ||
+                window.LASTLIBRARY.deckBuilder.cards === null ||
+                Object.keys(window.LASTLIBRARY.deckBuilder.cards).length === 0) return null;
+
+            //delete the current data in the 'current deck' section
+            $("#currentDeck").empty();
+
+            //iterate over all the cards in the current deckbuilder object and append them to the cards in deck section in the page
+            $.each(window.LASTLIBRARY.deckBuilder.cards, function (cardName, cardObject) {
+                $("<p />",
+                {
+                    text: cardObject.card.name + " x" + cardObject.amount
+                }).appendTo( $("#currentDeck") );
+            });
+            return false;
         }
 
     </script>
