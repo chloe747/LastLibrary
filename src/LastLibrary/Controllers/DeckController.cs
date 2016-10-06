@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using LastLibrary.Helpers;
 using LastLibrary.Models;
 using LastLibrary.Models.DeckManagerViewModel;
 using LastLibrary.Services;
@@ -20,11 +21,13 @@ namespace LastLibrary.Controllers
     {
         private readonly UserManager<ApplicationUser> UserManager;
         private INoSqlService NoSqlService { get; }
+        private DeckBuilderHelper DeckBuilderHelper { get; }
 
         public DeckController(UserManager<ApplicationUser> userManager, INoSqlService noSqlService)
         {
             UserManager = userManager;
             NoSqlService = noSqlService;
+            DeckBuilderHelper = new DeckBuilderHelper();
         }
 
         /**
@@ -55,6 +58,9 @@ namespace LastLibrary.Controllers
 
             //set the Creator to the current user
             deckModel.Creator = user.UserName;
+
+            //work out the colour spread of the deck
+            deckModel.ColourSpread = DeckBuilderHelper.CalculateColourSpread(deckModel.Cards);
 
             //set the creation time to now
             deckModel.CreationDate = DateTime.Now;
