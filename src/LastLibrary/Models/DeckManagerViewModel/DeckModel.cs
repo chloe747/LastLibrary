@@ -19,16 +19,16 @@ namespace LastLibrary.Models.DeckManagerViewModel
         public bool IsPublic { get; set; }
         public float? Rating { get; set; }
         public DateTime CreationDate { get; set; }
-        public Collection<ColourSpread> ColourSpread { get; set; }
+        public ICollection<ColourSpread> ColourSpread { get; set; }
 
         [Required]
-        public Collection<CardsInDeck> Cards { get; set; }
+        public ICollection<CardsInDeck> Cards { get; set; }
     }
 
     public class ColourSpread
     {
         public string Colour { get; set; }
-        public float Percentage { get; set; }
+        public double Percentage { get; set; }
     }
 
     public class CardsInDeck
