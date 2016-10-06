@@ -130,7 +130,7 @@
 
             //apply click handler to the 'save deck' button
             $("#deckSaveButton")
-                .click(function (e) {
+                .click(function(e) {
                     e.preventDefault();
                     saveDeckToServer();
                 });
@@ -171,10 +171,10 @@
                 url: "api/Deck",
                 contentType: 'application/json',
                 data: JSON.stringify(requestContent),
-                success: function (response) {
+                success: function(response) {
                     console.log("deck saved!", response);
                 },
-                error: function () {
+                error: function() {
                     console.error("Unable to save deck");
                 }
             });
@@ -238,7 +238,7 @@
                         cardElement.appendTo(cardSearchResultsElement);
                     });
                 },
-                error: function () {
+                error: function() {
                     console.error("Unable to query card api");
                 }
             });
@@ -262,18 +262,25 @@
             {
                 "class": "cardResult noSelect"
             });
+            var title = $("<p />",
+            {
+                "class": "cardTitle"
+            });
             var image = $("<img />",
             {
                 src: cardData.imageUrl,
                 alt: cardData.name + " Image",
                 "class": "card"
             });
-            var plusIcon = $("<div />",
+            var plusIcon = $("<img />",
             {
+                src: "/images/plusIcon.png",
                 "class": "cardAddToResults"
             });
 
             //append the elements together
+            title.append(cardData.name);
+            title.appendTo(containingDiv);
             image.appendTo(containingDiv);
             plusIcon.appendTo(containingDiv);
 
@@ -288,6 +295,7 @@
             //return the final result
             return containingDiv;
         }
+
 
         /**
          * A function that adds a card to the deck builder's global state. if the card already exists, increment the card about by +1
