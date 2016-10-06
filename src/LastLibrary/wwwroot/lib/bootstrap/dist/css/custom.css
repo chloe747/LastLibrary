@@ -3,6 +3,24 @@
     font-size: 2em;
 }
 
+.headerPadding {
+    padding: 20px;
+}
+
+.pushRight {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+
+.customButton {
+    border: 2px solid #5b5b5b;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #e1e1e1;
+}
+
 h1-custom {
   display: flex;
   flex-direction: row;
@@ -101,14 +119,15 @@ h1-custom:after {
 .container-left {
     margin-top: 50px;
     height: 1000px;
-
     padding: 10px;
+    padding-right: 20px;
 }
 
 .container-right {
     margin-top: 50px;
     height: 1000px;
     padding: 10px;
+    padding-left: 20px;
 }
 
 .search-icon {
@@ -172,14 +191,28 @@ select {
 }
 
 .card {
-    max-width: 80%;
+    display: flex;
+    max-width: 100%;
     height: auto;
+    margin-top: 40px;
 }
 
 .cardAddToResults {
-    height: 40px;
-    width: 40px;
-    background-color: hotpink;
+    display: flex;
+    margin-left: 5px;
+    height: 30px;
+    width: 30px;
+}
+
+.cardAddToResults:active {
+    background-color: #9d9d9d;
+    border-radius: 30px;
+}
+
+.cardTitle {
+    align-content: space-between;
+    flex: 1;
+    margin: 5px;
 }
 
 .noSelect {

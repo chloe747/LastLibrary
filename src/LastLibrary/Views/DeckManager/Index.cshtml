@@ -4,7 +4,7 @@
     Layout = "_Layout";
 }
 
-<h2>DeckModel Manager</h2>
+<div class="headerPadding"></div>
     <div class="col-md-12">
         <div class="container-left col-md-6">
             <h1-custom>Search</h1-custom>
@@ -61,28 +61,41 @@
 
 
                     <div class="submitButton">
-                        <button id="cardSearchButton" class="btn btn-default">Search</button>
+                        <button id="cardSearchButton" class="btn btn-default customButton">Search</button>
                     </div>
 
                 </form>
             </div>
-            <h1-custom>Your Deck</h1-custom>
-            <div class="form-group">
-                <label for="mana">Deck Name</label>
-                <input type="text" placeholder="Deck name" id="deckName" class="input-big padding-small">
-            </div>
-
-            <div id="currentDeck"></div>
             
-            <div class="submitButton">
-                <button id="deckSaveButton" class="btn btn-default">Save Deck</button>
-            </div>
+            <h1-custom>Search Result</h1-custom>
+            <div id="cardSearchResults" class="cardSearchResults"></div>
            
 
         </div>
         <div class="container-right col-md-6">
-            <h1-custom>Search Result</h1-custom>
-            <div id="cardSearchResults" class="cardSearchResults"></div>
+            <h1-custom>Your Deck</h1-custom>
+            <div class="form-group">
+                <label for="deckName">Deck Name</label>
+                <input type="text" placeholder="Deck name" id="deckName" class="input-big padding-small">
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea maxlength="250" rows="4" name="Description" id="Description" class="input-big padding-small"></textarea>
+            </div>
+            <div class="form-group pushRight">
+                <label class="checkbox-inline">
+                    <input type="checkbox" value="isPublic" id="isPublic"> Make Public
+                </label>
+            </div>
+
+            <p> Current Cards: </p>
+
+            <div id="currentDeck"></div>
+
+            <div class="submitButton">
+                <button id="deckSaveButton" class="btn btn-default customButton">Save Deck</button>
+            </div>
+
 
         </div>
     </div>
@@ -117,7 +130,7 @@
 
             //apply click handler to the 'save deck' button
             $("#deckSaveButton")
-                .click(function (e) {
+                .click(function(e) {
                     e.preventDefault();
                     saveDeckToServer();
                 });
@@ -130,6 +143,9 @@
         function saveDeckToServer() {
             //get the current name in the name input element
             var deckName = $("#deckName").val();
+            //get the other values from the input
+            var description = $("#Description").val();
+            var isPublic = $("#isPublic").is(":checked");
 
             //make sure there is a deckname
             if (deckName === undefined || deckName === null || deckName.length === 0) return null;
@@ -142,6 +158,8 @@
             //create the object to send to the server
             var requestContent = {
                 deckName,
+                description,
+                isPublic,
                 cards: $.map(window.LASTLIBRARY.deckBuilder.cards, function(cardObject) { return cardObject })
             };
 
@@ -153,10 +171,10 @@
                 url: "api/Deck",
                 contentType: 'application/json',
                 data: JSON.stringify(requestContent),
-                success: function (response) {
+                success: function(response) {
                     console.log("deck saved!", response);
                 },
-                error: function () {
+                error: function() {
                     console.error("Unable to save deck");
                 }
             });
@@ -220,7 +238,7 @@
                         cardElement.appendTo(cardSearchResultsElement);
                     });
                 },
-                error: function () {
+                error: function() {
                     console.error("Unable to query card api");
                 }
             });
@@ -244,18 +262,25 @@
             {
                 "class": "cardResult noSelect"
             });
+            var title = $("<p />",
+            {
+                "class": "cardTitle"
+            });
             var image = $("<img />",
             {
                 src: cardData.imageUrl,
                 alt: cardData.name + " Image",
                 "class": "card"
             });
-            var plusIcon = $("<div />",
+            var plusIcon = $("<img />",
             {
+                src: "/images/plusIcon.png",
                 "class": "cardAddToResults"
             });
 
             //append the elements together
+            title.append(cardData.name);
+            title.appendTo(containingDiv);
             image.appendTo(containingDiv);
             plusIcon.appendTo(containingDiv);
 
@@ -270,6 +295,7 @@
             //return the final result
             return containingDiv;
         }
+
 
         /**
          * A function that adds a card to the deck builder's global state. if the card already exists, increment the card about by +1
