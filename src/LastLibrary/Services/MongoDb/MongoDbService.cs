@@ -18,7 +18,7 @@ namespace LastLibrary.Services.MongoDb
         public MongoDbService(IOptions<MongoDbConfigurationModel> config)
         {
             //construct the connection URL
-            ConnectionUrl = "mongodb://" + config.Value.UserName + ":" + config.Value.Password + config.Value.Url + "?socketTimeoutMS=120000";
+            ConnectionUrl = "mongodb://" + config.Value.UserName + ":" + config.Value.Password + config.Value.Url;
         }
 
         private string ConnectionUrl { get; }
@@ -40,12 +40,11 @@ namespace LastLibrary.Services.MongoDb
         {
             var result = DecksCollection.InsertOneAsync(deckModel);
 
-            var serialisedBody = JsonConvert.SerializeObject(deckModel);
-
             Task.WaitAny(result);
-            return (result.IsFaulted != true) && (result.IsFaulted != true)
-                ? HttpStatusCode.OK
-                : HttpStatusCode.InternalServerError;
+
+            return (result.IsFaulted) || (result.IsFaulted)
+                ? HttpStatusCode.InternalServerError
+                : HttpStatusCode.OK;
         }
 
 

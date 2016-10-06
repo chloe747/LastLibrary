@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web.Http;
 using LastLibrary.Models;
 using LastLibrary.Models.DeckManagerViewModel;
 using LastLibrary.Services;
@@ -31,22 +32,26 @@ namespace LastLibrary.Controllers
          */
         [HttpPost]
         [Route("api/Deck")]
-        public async Task<HttpStatusCode> Post([FromBody] DeckModel deckModel)
+        public HttpStatusCode Post([FromBody] DeckModel deckModel)
         {
             //if the request has an invalid body
             if (!ModelState.IsValid)
             {
-                return HttpStatusCode.BadRequest;
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
             }
 
             //make sure the user is logged in
             if (!User.Identity.IsAuthenticated)
             {
-                throw new HttpRequestException("No user logged in");
+                throw new HttpResponseException(HttpStatusCode.Forbidden);
             }
 
             //otherwise, grab the current logged in user
-            var user = await UserManager.GetUserAsync(HttpContext.User);
+            var getUserTask = UserManager.GetUserAsync(HttpContext.User);
+
+            Task.WaitAny(getUserTask);
+
+            var user = getUserTask.Result;
 
             //set the Creator to the current user
             deckModel.Creator = user.UserName;
@@ -55,7 +60,15 @@ namespace LastLibrary.Controllers
             deckModel.CreationDate = DateTime.Now;
 
             //write the deck out to firebase
-            return NoSqlService.WriteDeck(deckModel);
+            var response =  NoSqlService.WriteDeck(deckModel);
+            
+            //this is hackey, but if there is an error, throw an exception
+            if (response != HttpStatusCode.OK)
+            {
+                throw new HttpResponseException(response);
+            }
+
+            return response;
         }
 
         [HttpGet]

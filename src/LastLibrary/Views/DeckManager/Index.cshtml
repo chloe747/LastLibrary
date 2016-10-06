@@ -155,6 +155,9 @@
                 data: JSON.stringify(requestContent),
                 success: function (response) {
                     console.log("deck saved!", response);
+                },
+                fail: function() {
+                    console.error("Unable to save deck");
                 }
             });
             return false;
