@@ -156,7 +156,7 @@
                 success: function (response) {
                     console.log("deck saved!", response);
                 },
-                fail: function() {
+                error: function () {
                     console.error("Unable to save deck");
                 }
             });
@@ -219,6 +219,9 @@
                         //otherwise, append the card element to the results section
                         cardElement.appendTo(cardSearchResultsElement);
                     });
+                },
+                error: function () {
+                    console.error("Unable to query card api");
                 }
             });
             return false;
