@@ -27,6 +27,40 @@ h1-custom:before {
 h1-custom:after {
   margin-left:10px;
 }
+
+.padding-small {
+    padding: 5px 5px 5px 5px;
+}
+
+.padding-top-small {
+    padding-top: 5px;
+}
+
+.padding-right-small {
+    padding-right: 5px;
+}
+
+.padding-bottom-small {
+    padding-bottom: 5px;
+}
+
+.padding-left-small {
+    padding-left: 5px;
+}
+
+.padding-vertical-small {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.padding-horizontal-small {
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.padding-left-large {
+    padding-left: 40px;
+}
 /* ----------------------nav bar------------------------------ */
 .navbar {
     display: flex;
@@ -77,6 +111,12 @@ h1-custom:after {
     padding: 10px;
 }
 
+.search-icon {
+    background-size: 30px;
+    background-repeat: no-repeat;
+    background-image: url('../../../../images/searchIcon.png');
+}
+
 .input-big {
     width: 100%;
     max-width: 500px;
@@ -85,10 +125,6 @@ h1-custom:after {
     border-radius: 4px;
     font-size: 16px;
     background-color: #e1e1e1;
-    background-image: url('../../../../images/searchIcon.png');
-    background-size: 30px;
-    background-repeat: no-repeat;
-    padding: 5px 5px 5px 40px;
 }
 
 label {

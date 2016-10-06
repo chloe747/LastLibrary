@@ -7,34 +7,40 @@ using LastLibrary.Models.DeckManagerViewModel;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 
 namespace LastLibrary.Services.MongoDb
 {
     public class MongoDbService : INoSqlService
     {
+
+
         public MongoDbService(IOptions<MongoDbConfigurationModel> config)
         {
             //construct the connection URL
-            ConnectionUrl = "mongodb://" + config.Value.UserName + ":" + config.Value.Password + config.Value.Url;
-
-            //connect to mongoDb
-            Client = new MongoClient(ConnectionUrl);
-
-            //connect to the database
-            Database = Client.GetDatabase("lastlibrary");
-
-            //get the Decks collection
-            DecksCollection = Database.GetCollection<DeckModel>("Decks");
+            ConnectionUrl = "mongodb://" + config.Value.UserName + ":" + config.Value.Password + config.Value.Url + "?socketTimeoutMS=120000";
         }
 
         private string ConnectionUrl { get; }
-        private MongoClient Client { get; }
-        private IMongoDatabase Database { get; }
-        private IMongoCollection<DeckModel> DecksCollection { get; }
+        private IMongoCollection<DeckModel> DecksCollection
+        {
+            get
+            {
+                //connect to mongoDb
+                var client = new MongoClient(ConnectionUrl);
+
+                //connect to the database
+                var database = client.GetDatabase("lastlibrary");
+
+                return database.GetCollection<DeckModel>("Decks");
+            }
+        }
 
         public HttpStatusCode WriteDeck(DeckModel deckModel)
         {
             var result = DecksCollection.InsertOneAsync(deckModel);
+
+            var serialisedBody = JsonConvert.SerializeObject(deckModel);
 
             Task.WaitAny(result);
             return (result.IsFaulted != true) && (result.IsFaulted != true)
@@ -95,5 +101,6 @@ namespace LastLibrary.Services.MongoDb
             //return the result
             return decksRequest.Result;
         }
+
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using LastLibrary.Models;
 using LastLibrary.Models.DeckManagerViewModel;
@@ -38,16 +39,20 @@ namespace LastLibrary.Controllers
                 return HttpStatusCode.BadRequest;
             }
 
+            //make sure the user is logged in
+            if (!User.Identity.IsAuthenticated)
+            {
+                throw new HttpRequestException("No user logged in");
+            }
+
             //otherwise, grab the current logged in user
             var user = await UserManager.GetUserAsync(HttpContext.User);
 
             //set the Creator to the current user
-            deckModel.Creator = (user == null) ?  "Postman Test" : user.UserName;
+            deckModel.Creator = user.UserName;
 
             //set the creation time to now
             deckModel.CreationDate = DateTime.Now;
-
-            //TODO: Implement how to send card model data from the front end to the back end
 
             //write the deck out to firebase
             return NoSqlService.WriteDeck(deckModel);
@@ -58,19 +63,16 @@ namespace LastLibrary.Controllers
         public async Task<ICollection<DeckModel>> GetDecksForUser()
         {
             //make sure the user is logged in
-            //            if (!User.Identity.IsAuthenticated)
-            //            {
-            //                return HttpStatusCode.Forbidden;
-            //            }
+            if (!User.Identity.IsAuthenticated)
+            {
+                throw new HttpRequestException("No user logged in");
+            }
 
-            //get the username
+            //get the user's data
             var user = await UserManager.GetUserAsync(HttpContext.User);
-
-            //set the Creator to the current user
-            var userName = (user == null) ? "Postman Test" : user.UserName;
             
             //get the decks from mongoDb
-            return NoSqlService.GetDecksForUser(userName);
+            return NoSqlService.GetDecksForUser(user.UserName);
         }
 
         [HttpGet]

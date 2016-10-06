@@ -12,7 +12,7 @@
                 <form class="card-search">
                     <div class="form-group">
                         <label for="cardName" id="cardNameLabel">Card Name</label>
-                        <input type="text" placeholder="card name" id="cardName" class="input-big">
+                        <input type="text" placeholder="card name" id="cardName" class="input-big search-icon padding-vertical-small padding-right-small padding-left-large">
                     </div>
 
                     <label id="colourLabel">Colours</label>
@@ -67,7 +67,16 @@
                 </form>
             </div>
             <h1-custom>Your Deck</h1-custom>
+            <div class="form-group">
+                <label for="mana">Deck Name</label>
+                <input type="text" placeholder="Deck name" id="deckName" class="input-big padding-small">
+            </div>
+
             <div id="currentDeck"></div>
+            
+            <div class="submitButton">
+                <button id="deckSaveButton" class="btn btn-default">Save Deck</button>
+            </div>
            
 
         </div>
@@ -82,15 +91,14 @@
     <script type="text/javascript">
         $(function() {
             //create the LastLibrary namespace to store deck state
-            if( window.LASTLIBRARY === undefined || window.LASTLIBRARY === null ) window.LASTLIBRARY = {};
+            if (window.LASTLIBRARY === undefined || window.LASTLIBRARY === null) window.LASTLIBRARY = {};
 
             //create a variable to track deck building data
             window.LASTLIBRARY.deckBuilder = {
-                deckName: '',
                 cards: {}
             };
 
-            //apply click handler to the submit button
+            //apply click handler to the 'search for cards' button
             $("#cardSearchButton")
                 .click(function(e) {
                     e.preventDefault();
@@ -106,7 +114,51 @@
                             requestCards(e);
                         }
                     });
+
+            //apply click handler to the 'save deck' button
+            $("#deckSaveButton")
+                .click(function (e) {
+                    e.preventDefault();
+                    saveDeckToServer();
+                });
         });
+
+        /**
+         * Function that initiated and handles a call to the back-end to save the current deck
+         * stored in the LASTLIBRARY namespace to the database
+         */
+        function saveDeckToServer() {
+            //get the current name in the name input element
+            var deckName = $("#deckName").val();
+
+            //make sure there is a deckname
+            if (deckName === undefined || deckName === null || deckName.length === 0) return null;
+
+            //make sure we have card data, otherwise return
+            if (window.LASTLIBRARY.deckBuilder.cards === undefined ||
+                window.LASTLIBRARY.deckBuilder.cards === null ||
+                Object.keys(window.LASTLIBRARY.deckBuilder.cards).length === 0) return null;
+
+            //create the object to send to the server
+            var requestContent = {
+                deckName,
+                cards: $.map(window.LASTLIBRARY.deckBuilder.cards, function(cardObject) { return cardObject })
+            };
+
+            console.log(requestContent);
+
+            //send the request to the server
+            $.ajax({
+                type: "POST",
+                url: "api/Deck",
+                contentType: 'application/json',
+                data: JSON.stringify(requestContent),
+                success: function (response) {
+                    console.log("deck saved!", response);
+                }
+            });
+            return false;
+        }
 
         /**
          * Function that gathers the currently entered form data, stores the data in a JSON and sends a request to the
@@ -115,6 +167,9 @@
         function requestCards() {
             //get the card name
             var cardName = $("#cardName").val();
+
+            //get the card search results element
+            var cardSearchResultsElement = $("#cardSearchResults");
 
             //get the appropriate value for the rarity
             var rarity = $("#rarity").val();
@@ -135,6 +190,10 @@
                 "rarity": rarity
             };
 
+            //before we send the data to the server, set a "loading" element in the search results
+            var loadingElement = createLoadingElement();
+            loadingElement.appendTo(cardSearchResultsElement);
+
             //send the Ajax call to the server
             $.ajax({
                 type: "POST",
@@ -143,7 +202,6 @@
                 data: JSON.stringify(requestContent),
                 success: function(response) {
                     //remove the previous search results
-                    var cardSearchResultsElement = $("#cardSearchResults");
                     cardSearchResultsElement.empty();
 
                     //create and append the response to the results area
@@ -245,13 +303,32 @@
             $("#currentDeck").empty();
 
             //iterate over all the cards in the current deckbuilder object and append them to the cards in deck section in the page
-            $.each(window.LASTLIBRARY.deckBuilder.cards, function (cardName, cardObject) {
-                $("<p />",
-                {
-                    text: cardObject.card.name + " x" + cardObject.amount
-                }).appendTo( $("#currentDeck") );
-            });
+            $.each(window.LASTLIBRARY.deckBuilder.cards,
+                function(cardName, cardObject) {
+                    $("<p />",
+                        {
+                            text: cardObject.card.name + " x" + cardObject.amount
+                        })
+                        .appendTo($("#currentDeck"));
+                });
             return false;
+        }
+
+        /**
+         * Function that creates a loading element
+         * 
+         * @@returns {element} - The loading element
+         */
+        function createLoadingElement() {
+            //empty the search results
+            $("#cardSearchResults").empty();
+
+            //TODO - Implement proper loading element, not just a text based element
+            var loadingElement = $('<p />',
+            {
+                text: "Loading..."
+            });
+            return loadingElement;
         }
 
     </script>
