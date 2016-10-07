@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace LastLibrary.Models.DeckManagerViewModel
@@ -11,6 +12,7 @@ namespace LastLibrary.Models.DeckManagerViewModel
     [BsonIgnoreExtraElements]
     public class DeckModel
     {
+        public ObjectId Id { get; set; }
         [Required]
         [RegularExpression("^[a-zA-Z0-9 ]*$", ErrorMessage = "Alphanumeric Characters Only")]
         public string DeckName { get; set; }

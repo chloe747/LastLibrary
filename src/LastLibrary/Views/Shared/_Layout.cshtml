@@ -13,12 +13,14 @@
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/custom.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/mana.css" />
     </environment>
     <environment names="Staging,Production">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/css/mana.css" />
     </environment>
     @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
 </head>
@@ -38,24 +40,25 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">MY DECKS</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">BROWSE</a></li>
+                    <li><a asp-area="" asp-controller="Browse" asp-action="Index">BROWSE</a></li>
                     @if (SignInManager.IsSignedIn(User))
                     {
-                        <li><a asp-area="" asp-controller="DeckManager" asp-action="Index">Deck Manager</a></li>
+                        <li><a asp-area="" asp-controller="Browse" asp-action="Decks">MY DECKS</a></li>
+                        <li><a asp-area="" asp-controller="DeckManager" asp-action="Index">DECK MANAGER</a></li>
                     }
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>
         </div>
     </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; 2016 - LastLibrary </p>
-        </footer>
-    </div>
+<div class="container body-content">
+    <div class="headerPadding"></div>
+    @RenderBody()
+    <hr/>
+    <footer>
+        <p>&copy; 2016 - LastLibrary </p>
+    </footer>
+</div>
 
     <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>

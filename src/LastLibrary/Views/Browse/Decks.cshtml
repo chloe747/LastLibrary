@@ -1,0 +1,263 @@
+﻿@using Newtonsoft.Json
+@model LastLibrary.Models.BrowseModels.MyDecksModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="headerPadding"></div>
+<div class="col-md-12">
+    <div class="col-md-7">
+        <h1-custom>My Decks</h1-custom>
+        @{
+            if (Model.UsersDecks.Count == 0)
+            {
+                <p>
+                    You don't have any Decks. Try creating a Deck in the
+                    <a asp-area="" asp-controller="DeckManager" asp-action="Index"> Deck Builder</a>
+                </p>
+            }
+            else
+            {
+                <div id="deckContainer">
+                    @{
+                        foreach (var deckData in Model.UsersDecks.Select((deck, i) => new {deck, i}))
+                        {
+                            var oddCollectionElement = "";
+                            if (deckData.i%2 == 1)
+                            {
+                                oddCollectionElement = "lastLibrary--list-odd";
+                            }
+                            <div class="lastLibrary-flex lastLibrary-flex--column @oddCollectionElement">
+                                <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--justify-space-between">
+                                    <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-center">
+                                        <div class="placeholder-square--purple"></div>
+                                        <p class="padding-left-small">@deckData.deck.DeckName</p>
+                                    </div>
+                                    <div class="lastLibrary-flex lastLibrary-flex--row">
+                                        @{
+                                            if (deckData.deck.IsPublic)
+                                            {
+                                                if (deckData.deck.Rating == null)
+                                                {
+                                                    <p>Not Yet Rated</p>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <p>Private Deck</p>
+                                            }
+                                        }
+                                        <div class="padding-left-small">
+                                            @{
+                                                var orderedColourSpread = deckData.deck.ColourSpread.OrderByDescending(el => el.Percentage).ToList();
+                                                foreach (var colour in orderedColourSpread)
+                                                {
+                                                    if (string.Compare(colour.Colour, "red", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                                    {
+                                                        <span class="mana small sr"></span>
+                                                    }
+                                                    else if (string.Compare(colour.Colour, "blue", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                                    {
+                                                        <span class="mana small su"></span>
+                                                    }
+                                                    else if (string.Compare(colour.Colour, "black", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                                    {
+                                                        <span class="mana small sb"></span>
+                                                    }
+                                                    else if (string.Compare(colour.Colour, "green", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                                    {
+                                                        <span class="mana small sg"></span>
+                                                    }
+                                                    else if (string.Compare(colour.Colour, "white", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                                    {
+                                                        <span class="mana small sw"></span>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="lastLibrary-100-width lastLibrary-hidden lastLibrary-toggleable lastLibrary-flex--column">
+                                    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around">
+                                        <a href="#" onclick="displaySampleHand(event, @JsonConvert.SerializeObject(deckData.deck.Id))">
+                                            Draw Hand
+                                        </a>
+                                        <a asp-area="" asp-controller="DeckManager" asp-action="Edit" asp-route-id="@deckData.deck.Id">
+                                            Edit
+                                        </a>
+                                        <a href="#" onclick="deleteDeck(event, '@deckData.deck.Id')">
+                                            Delete
+                                        </a>
+                                    </div>
+                                    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex lastLibrary-flex--column">
+                                        @{
+                                            foreach (var card in deckData.deck.Cards)
+                                            {
+                                                var cardInformation = card.Card.Name + " x" + card.Amount;
+                                                <p>@cardInformation</p>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+        }
+
+    </div>
+
+    <div class="col-md-5">
+        <h1-custom>Sample Hand</h1-custom>
+        <div id="sampleHandArea" class="lastLibrary-100-width padding-small lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--wrap"></div>
+    </div>
+
+</div>
+
+<script id="deckJson" type="application/json">
+    @Html.Raw(JsonConvert.SerializeObject(Model.UsersDecks))
+</script>
+
+@section scripts{
+    <script type="text/javascript">
+        $(function() {
+            //go through every element in the deckContainer
+            var decks = $("#deckContainer > div");
+
+            $.each(decks,
+                function(deckKey, deckElement) {
+                    //get the expand/collapse button in the deck
+                    var button = $(deckElement).find(".placeholder-square--purple");
+                    //get the toggleble portion of the deck
+                    var toggleableContent = $(deckElement).find(".lastLibrary-toggleable");
+
+                    //set the click handler for the button
+                    button.on("click",
+                        function() {
+                            if ($(toggleableContent).css('display') === 'none') {
+                                $(toggleableContent).css('display', 'flex');
+                            } else {
+                                $(toggleableContent).css('display', 'none');
+                            }
+                        });
+                });
+
+            //load the inpage JSON into the window.LASTLIBRARY namespace
+            if (window.LASTLIBRARY === undefined || window.LASTLIBRARY === null) window.LASTLIBRARY = {};
+
+            window.LASTLIBRARY["userDecks"] = JSON.parse($('#deckJson').html());
+
+        });
+
+        /**
+         * Function that, using the supplied objectId, will grab a sample hand from the
+         * deck data stored in the LASTLIBRARY global namespace
+         * 
+         * @@param {object} objectId - the object Id for the deck
+         */
+        function displaySampleHand(e, objectId) {
+            e.preventDefault();
+
+            //iterate over the decks stored in the global state and find the requested deck
+            $.each(window.LASTLIBRARY.userDecks,
+                function(deckKey, deckObject) {
+                    //compare the .id key
+                    if (isEquivalent(deckObject.Id, objectId)) {
+                        //if we found the correct deck object, create an array to hold each card times the amount of times it shows up
+                        var deckArray = [];
+                        deckObject.Cards.forEach(function(cardData) {
+                            //add the card image url to the array N times (where N = amount)
+                            for (var i = 0; i < cardData.Amount; i++) {
+                                deckArray.push(cardData.Card.ImageUrl);
+                            }
+                        });
+                        //now, create another array to store the card draw results
+                        var results = [];
+                        //loop and add 7 cards to the array, this will be your sample hand
+                        for (var i = 0; i < 7; i++) {
+                            results.push(deckArray[Math.floor(Math.random() * deckArray.length)]);
+                        }
+                        
+                        //create img elements for the cards and append them to the sample hand area
+                        var sampleHandArea = $("#sampleHandArea");
+                        sampleHandArea.empty();
+                        results.forEach(function(element, index) {
+                            $("<img />",
+                            {
+                                src: element,
+                                alt: "sample-card-" + index,
+                                "class": "card"
+                            }).appendTo(sampleHandArea);
+                        });
+                        return true;
+                    }
+                });
+            return false;
+        }
+
+        /**
+         * Function that, when called, will send of an ajax call to the server to delete the
+         * requested deck by the deck's ID
+         *
+         * @@param {string} deckId - The id of the deck to delete
+         */
+        function deleteDeck(e, deckId) {
+
+            e.preventDefault();
+
+            //make sure we got a deck ID to send to the server
+            if (deckId === undefined || deckId === null) return false;
+
+            //otherwise, make a call to the server to delete the deck
+            $.ajax({
+                type: "DELETE",
+                url: "/api/Deck/" + deckId,
+                success: function() {
+                    //refresh the page to get the new data from the server
+                    location.reload();
+                },
+                error: function() {
+                    console.error("Unable to delete deck");
+                }
+            });
+            return true;
+        }
+
+        /**
+         * Function that check to see that the contents of two different object are the same
+         * credit to http://adripofjavascript.com/blog/drips/object-equality-in-javascript.html
+         *
+         * @@param {object} a - the first object in the equality checking
+         * @@param {object} a - the second object in the equality checking
+         *
+         * @@returns {boolean} - true if the objects contents are the same, false if they are not the same
+         */
+        function isEquivalent(a, b) {
+            // Create arrays of property names
+            var aProps = Object.getOwnPropertyNames(a);
+            var bProps = Object.getOwnPropertyNames(b);
+
+            // If number of properties is different,
+            // objects are not equivalent
+            if (aProps.length != bProps.length) {
+                return false;
+            }
+
+            for (var i = 0; i < aProps.length; i++) {
+                var propName = aProps[i];
+
+                // If values of same property are not equal,
+                // objects are not equivalent
+                if (a[propName] !== b[propName]) {
+                    return false;
+                }
+            }
+
+            // If we made it this far, objects
+            // are considered equivalent
+            return true;
+        }
+    </script>
+}

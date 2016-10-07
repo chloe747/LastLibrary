@@ -101,5 +101,18 @@ namespace LastLibrary.Services.MongoDb
             return decksRequest.Result;
         }
 
+        public HttpStatusCode DeleteDeck(string deckId)
+        {
+            var filter= Builders<DeckModel>.Filter.Eq("_id", ObjectId.Parse(deckId));
+            //delete the deck using the mongoDB driver
+            var result = DecksCollection.DeleteManyAsync(filter);
+
+            Task.WaitAny(result);
+
+            return (result.IsFaulted) || (result.IsFaulted)
+                ? HttpStatusCode.InternalServerError
+                : HttpStatusCode.OK;
+        }
+
     }
 }
