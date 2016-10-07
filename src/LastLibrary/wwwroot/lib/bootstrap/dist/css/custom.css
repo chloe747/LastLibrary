@@ -240,6 +240,7 @@ select {
     margin-left: 20px;
     height: 30px;
     width: 30px;
+    align-self: center;
 }
 
 .moveCard:active {
