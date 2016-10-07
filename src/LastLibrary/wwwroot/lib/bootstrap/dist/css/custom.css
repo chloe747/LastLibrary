@@ -255,17 +255,19 @@ select {
   -ms-user-select: none;
 }
 
-.minusButton {
-    background-color: purple;
-    height: 30px;
-    width: 30px;
-    color: hotpink;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .cardListItem {
     margin-bottom: 20px;
 }
 
+/* -- placeholder, should be deleted when done -- */
+.placeholder-square--purple {
+    background-color: purple;
+    height: 30px;
+    width: 30px;
+}
+
+.placeholder-square--pink {
+    background-color: hotpink;
+    height: 30px;
+    width: 30px;
+}

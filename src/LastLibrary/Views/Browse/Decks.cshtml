@@ -1,0 +1,83 @@
+﻿@using LastLibrary.Models.BrowseModels
+@model LastLibrary.Models.BrowseModels.MyDecksModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="headerPadding"></div>
+<div class="col-md-12">
+    <div class="col-md-7">
+        <h1-custom>My Decks</h1-custom>
+        @{
+            if (Model.UsersDecks.Count == 0)
+            {
+                <p>
+                    You don't have any Decks. Try creating a Deck in the
+                    <a asp-area="" asp-controller="DeckManager" asp-action="Index"> Deck Builder</a>
+                </p>
+            }
+            else
+            {
+                foreach (var deck in Model.UsersDecks)
+                {
+                    <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between">
+                        <div class="lastLibrary-flex lastLibrary-flex--row">
+                            <div class="placeholder-square--purple"></div>
+                            <p class="padding-left-small">@deck.DeckName</p>
+                        </div>
+                        <div class="lastLibrary-flex lastLibrary-flex--row">
+                            @{
+                                if (deck.IsPublic)
+                                {
+                                    if (deck.Rating == null)
+                                    {
+                                        <p>Not Yet Rated</p>
+                                    }
+                                }
+                                else
+                                {
+                                    <p>Private Deck</p>
+                                }
+                            }
+                            <div class="padding-left-small">
+                                @{
+                                    var orderedColourSpread = deck.ColourSpread.OrderByDescending(el => el.Percentage).ToList();
+                                    foreach (var colour in orderedColourSpread)
+                                    {
+                                        if (string.Compare(colour.Colour, "red", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                        {
+                                            <span class="mana small sr"></span>
+                                        }
+                                        else if (string.Compare(colour.Colour, "blue", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                        {
+                                            <span class="mana small su"></span>
+                                        }
+                                        else if (string.Compare(colour.Colour, "black", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                        {
+                                            <span class="mana small sb"></span>
+                                        }
+                                        else if (string.Compare(colour.Colour, "green", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                        {
+                                            <span class="mana small sg"></span>
+                                        }
+                                        else if (string.Compare(colour.Colour, "white", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                        {
+                                            <span class="mana small sw"></span>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
+        
+    </div>
+
+    <div class="col-md-5">
+        <h1-custom>Sample Hand</h1-custom>
+        <p>How Handy</p>
+    </div>
+
+</div>
