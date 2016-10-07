@@ -46,6 +46,28 @@ h1-custom:after {
   margin-left:10px;
 }
 
+/* -- Utility and Generic classes -- */
+
+.lastLibrary-flex {
+    display: flex;
+}
+
+.lastLibrary-flex--row {
+    flex-direction: row;
+}
+
+.lastLibrary-flex--justify-space-around {
+    justify-content: space-around;
+}
+
+.lastLibrary-flex--justify-space-between {
+    justify-content: space-between;
+}
+
+.lastLibrary-flex--wrap {
+    flex-wrap: wrap;    
+}
+
 .padding-small {
     padding: 5px 5px 5px 5px;
 }
@@ -221,3 +243,14 @@ select {
   -webkit-user-select: none;
   -ms-user-select: none;
 }
+
+.minusButton {
+    background-color: purple;
+    height: 30px;
+    width: 30px;
+    color: hotpink;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
