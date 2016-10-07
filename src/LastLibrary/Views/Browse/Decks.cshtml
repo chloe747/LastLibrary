@@ -173,28 +173,45 @@
                                 deckArray.push(cardData.Card.ImageUrl);
                             }
                         });
+                        //if there are 7 or less cards in the deck, just show those 7
+                        if (deckArray.length <= 7) {
+                            //create img elements for the cards and append them to the sample hand area
+                            printSampleHand(deckArray);
+                            return true;
+                        }
                         //now, create another array to store the card draw results
                         var results = [];
                         //loop and add 7 cards to the array, this will be your sample hand
                         for (var i = 0; i < 7; i++) {
                             results.push(deckArray[Math.floor(Math.random() * deckArray.length)]);
                         }
-                        
+
                         //create img elements for the cards and append them to the sample hand area
-                        var sampleHandArea = $("#sampleHandArea");
-                        sampleHandArea.empty();
-                        results.forEach(function(element, index) {
-                            $("<img />",
-                            {
-                                src: element,
-                                alt: "sample-card-" + index,
-                                "class": "card"
-                            }).appendTo(sampleHandArea);
-                        });
+                        printSampleHand(results);
                         return true;
                     }
                 });
             return false;
+        }
+
+        /**
+         * function that prints the supplied array of image urls to the sample hand area
+         * 
+         * @@param {string[]} sampleHand - an array of Urls to be printed to the sample hand area
+         */
+        function printSampleHand(sampleHand) {
+            var sampleHandArea = $("#sampleHandArea");
+            sampleHandArea.empty();
+            sampleHand.forEach(function(element, index) {
+                $("<img />",
+                    {
+                        src: element,
+                        alt: "sample-card-" + index,
+                        "class": "card"
+                    })
+                    .appendTo(sampleHandArea);
+            });
+            return true;
         }
 
         /**
