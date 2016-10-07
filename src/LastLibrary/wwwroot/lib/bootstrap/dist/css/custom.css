@@ -55,8 +55,20 @@ h1-custom:after {
     display: flex;
 }
 
+.lastLibrary-hidden {
+    display: none;
+}
+
 .lastLibrary-flex--row {
     flex-direction: row;
+}
+
+.lastLibrary-flex--column {
+    flex-direction: column;
+}
+
+.lastLibrary-flex--justify-center {
+    justify-content: center;
 }
 
 .lastLibrary-flex--justify-space-around {
@@ -69,6 +81,18 @@ h1-custom:after {
 
 .lastLibrary-flex--wrap {
     flex-wrap: wrap;    
+}
+
+.lastLibrary-flex--align-items-center {
+    align-items: center;
+}
+
+.lastLibrary--list-odd {
+    background-color: lightgray;
+}
+
+.lastLibrary-100-width {
+    width: 100%;
 }
 
 .padding-small {

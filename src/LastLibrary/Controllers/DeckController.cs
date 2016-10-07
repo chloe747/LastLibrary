@@ -110,5 +110,12 @@ namespace LastLibrary.Controllers
             return NoSqlService.GetDecksByUserNameAndDeckName(Uri.UnescapeDataString(userName), Uri.UnescapeDataString(deckName));
         }
 
+        [HttpDelete]
+        [Route("api/Deck/{id}")]
+        public HttpStatusCode DeleteDeckById(string id)
+        {
+            return NoSqlService.DeleteDeck(id);
+        }
+
     }
 }

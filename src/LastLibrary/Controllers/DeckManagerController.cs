@@ -23,5 +23,10 @@ namespace LastLibrary.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
+
+        public ActionResult Edit(string id)
+        {
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

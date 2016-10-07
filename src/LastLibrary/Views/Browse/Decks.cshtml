@@ -1,5 +1,4 @@
-﻿@using LastLibrary.Models.BrowseModels
-@model LastLibrary.Models.BrowseModels.MyDecksModel
+﻿@model LastLibrary.Models.BrowseModels.MyDecksModel
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -18,61 +17,95 @@
             }
             else
             {
-                foreach (var deck in Model.UsersDecks)
-                {
-                    <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between">
-                        <div class="lastLibrary-flex lastLibrary-flex--row">
-                            <div class="placeholder-square--purple"></div>
-                            <p class="padding-left-small">@deck.DeckName</p>
-                        </div>
-                        <div class="lastLibrary-flex lastLibrary-flex--row">
-                            @{
-                                if (deck.IsPublic)
-                                {
-                                    if (deck.Rating == null)
-                                    {
-                                        <p>Not Yet Rated</p>
-                                    }
-                                }
-                                else
-                                {
-                                    <p>Private Deck</p>
-                                }
+                <div id="deckContainer">
+                    @{
+                        foreach (var deckData in Model.UsersDecks.Select((deck, i) => new {deck, i}))
+                        {
+                            var oddCollectionElement = "";
+                            if (deckData.i%2 == 1)
+                            {
+                                oddCollectionElement = "lastLibrary--list-odd";
                             }
-                            <div class="padding-left-small">
-                                @{
-                                    var orderedColourSpread = deck.ColourSpread.OrderByDescending(el => el.Percentage).ToList();
-                                    foreach (var colour in orderedColourSpread)
-                                    {
-                                        if (string.Compare(colour.Colour, "red", StringComparison.CurrentCultureIgnoreCase) == 0)
-                                        {
-                                            <span class="mana small sr"></span>
+                            <div class="lastLibrary-flex lastLibrary-flex--column @oddCollectionElement">
+                                <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--justify-space-between">
+                                    <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-center">
+                                        <div class="placeholder-square--purple"></div>
+                                        <p class="padding-left-small">@deckData.deck.DeckName</p>
+                                    </div>
+                                    <div class="lastLibrary-flex lastLibrary-flex--row">
+                                        @{
+                                            if (deckData.deck.IsPublic)
+                                            {
+                                                if (deckData.deck.Rating == null)
+                                                {
+                                                    <p>Not Yet Rated</p>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <p>Private Deck</p>
+                                            }
                                         }
-                                        else if (string.Compare(colour.Colour, "blue", StringComparison.CurrentCultureIgnoreCase) == 0)
-                                        {
-                                            <span class="mana small su"></span>
+                                        <div class="padding-left-small">
+                                            @{
+                                                var orderedColourSpread = deckData.deck.ColourSpread.OrderByDescending(el => el.Percentage).ToList();
+                                                foreach (var colour in orderedColourSpread)
+                                                {
+                                                    if (string.Compare(colour.Colour, "red", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                                    {
+                                                        <span class="mana small sr"></span>
+                                                    }
+                                                    else if (string.Compare(colour.Colour, "blue", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                                    {
+                                                        <span class="mana small su"></span>
+                                                    }
+                                                    else if (string.Compare(colour.Colour, "black", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                                    {
+                                                        <span class="mana small sb"></span>
+                                                    }
+                                                    else if (string.Compare(colour.Colour, "green", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                                    {
+                                                        <span class="mana small sg"></span>
+                                                    }
+                                                    else if (string.Compare(colour.Colour, "white", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                                    {
+                                                        <span class="mana small sw"></span>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="lastLibrary-100-width lastLibrary-hidden lastLibrary-toggleable lastLibrary-flex--column">
+                                    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around">
+                                        <a href="#">
+                                            Draw Hand
+                                        </a>
+                                        <a asp-area="" asp-controller="DeckManager" asp-action="Edit" asp-route-id="@deckData.deck.Id">
+                                            Edit
+                                        </a>
+                                        <a href="#" onclick="deleteDeck(event, '@deckData.deck.Id')">
+                                            Delete
+                                        </a>
+                                    </div>
+                                    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex lastLibrary-flex--column">
+                                        @{
+                                            foreach (var card in deckData.deck.Cards)
+                                            {
+                                                var cardInformation = card.Card.Name + " x" + card.Amount;
+                                                <p>@cardInformation</p>
+                                            }
                                         }
-                                        else if (string.Compare(colour.Colour, "black", StringComparison.CurrentCultureIgnoreCase) == 0)
-                                        {
-                                            <span class="mana small sb"></span>
-                                        }
-                                        else if (string.Compare(colour.Colour, "green", StringComparison.CurrentCultureIgnoreCase) == 0)
-                                        {
-                                            <span class="mana small sg"></span>
-                                        }
-                                        else if (string.Compare(colour.Colour, "white", StringComparison.CurrentCultureIgnoreCase) == 0)
-                                        {
-                                            <span class="mana small sw"></span>
-                                        }
-                                    }
-                                }
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                }
+                        }
+                    }
+                </div>
             }
         }
-        
+
     </div>
 
     <div class="col-md-5">
@@ -81,3 +114,57 @@
     </div>
 
 </div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(function() {
+            //go through every element in the deckContainer
+            var decks = $("#deckContainer > div");
+
+            $.each(decks,
+                function(deckKey, deckElement) {
+                    //get the expand/collapse button in the deck
+                    var button = $(deckElement).find(".placeholder-square--purple");
+                    //get the toggleble portion of the deck
+                    var toggleableContent = $(deckElement).find(".lastLibrary-toggleable");
+
+                    //set the click handler for the button
+                    button.on("click",
+                        function() {
+                            if ($(toggleableContent).css('display') === 'none') {
+                                $(toggleableContent).css('display', 'flex');
+                            } else {
+                                $(toggleableContent).css('display', 'none');
+                            }
+                        });
+                });
+        });
+
+        /**
+         * Function that, when called, will send of an ajax call to the server to delete the
+         * requested deck by the deck's ID
+         *
+         * @@param {string} deckId - The id of the deck to delete
+         */
+        function deleteDeck(e, deckId) {
+
+            e.preventDefault();
+
+            //make sure we got a deck ID to send to the server
+            if (deckId === undefined || deckId === null) return false;
+
+            //otherwise, make a call to the server to delete the deck
+            $.ajax({
+                type: "DELETE",
+                url: "/api/Deck/" + deckId,
+                success: function () {
+                    //refresh the page to get the new data from the server
+                    location.reload();
+                },
+                error: function () {
+                    console.error("Unable to delete deck");
+                }
+            });
+        }
+    </script>
+}
