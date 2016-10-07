@@ -12,7 +12,7 @@ namespace LastLibrary.Models.DeckManagerViewModel
     [BsonIgnoreExtraElements]
     public class DeckModel
     {
-        public BsonObjectId Id { get; set; }
+        public ObjectId Id { get; set; }
         [Required]
         [RegularExpression("^[a-zA-Z0-9 ]*$", ErrorMessage = "Alphanumeric Characters Only")]
         public string DeckName { get; set; }
