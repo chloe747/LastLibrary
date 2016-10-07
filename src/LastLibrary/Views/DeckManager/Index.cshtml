@@ -163,8 +163,6 @@
                 cards: $.map(window.LASTLIBRARY.deckBuilder.cards, function(cardObject) { return cardObject })
             };
 
-            console.log(requestContent);
-
             //send the request to the server
             $.ajax({
                 type: "POST",
@@ -323,27 +321,88 @@
         }
 
         /**
+         * A function that will decrement the amount of a card from the deck builder's global state.
+         * if the card only has one copy, remove the entire card from the state
+         * 
+         * @@param {object} cardData - the data object for the card to be removed 
+         */
+        function removeCardFromDeckBuilder(cardData) {
+            var cardId = cardData.multiverseId.toString();
+
+            //check to see if the card even exists in the namespace state
+            if (window.LASTLIBRARY.deckBuilder.cards[cardId] === undefined ||
+                window.LASTLIBRARY.deckBuilder.cards[cardId] === null) return null;
+
+            //check to see if the card only has a single copy in the state, if it does, remove the entire entry
+            if (window.LASTLIBRARY.deckBuilder.cards[cardId].amount === 1) {
+                delete window.LASTLIBRARY.deckBuilder.cards[cardId];
+            } else {
+                //otherwise, just decrement the amount of cards by 1
+                window.LASTLIBRARY.deckBuilder.cards[cardId].amount--;
+            }
+            return true;
+        }
+
+        /**
          * A function that will print out all the cards in the deckbuilder variable in the LASTLIBRARY namespace
          */
         function printCardsInDeckBuilder() {
+            //delete the current data in the 'current deck' section
+            $("#currentDeck").empty();
+
             //make sure we have card data, otherwise return
             if (window.LASTLIBRARY.deckBuilder.cards === undefined ||
                 window.LASTLIBRARY.deckBuilder.cards === null ||
                 Object.keys(window.LASTLIBRARY.deckBuilder.cards).length === 0) return null;
 
-            //delete the current data in the 'current deck' section
-            $("#currentDeck").empty();
 
             //iterate over all the cards in the current deckbuilder object and append them to the cards in deck section in the page
             $.each(window.LASTLIBRARY.deckBuilder.cards,
                 function(cardName, cardObject) {
-                    $("<p />",
-                        {
-                            text: cardObject.card.name + " x" + cardObject.amount
-                        })
+                    createCardInDeck(cardObject)
                         .appendTo($("#currentDeck"));
                 });
             return false;
+        }
+
+        /**
+         * Function that creates a set of elements that represent a card that
+         * the user has chosen to be in thier deck
+         *
+         * @@ param {object} cardData - 
+         */
+        function createCardInDeck(cardData) {
+
+            //create the containing div that will house the card data
+            var container = $('<div />',
+            {
+                "class": "lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between"
+            });
+            //create the label for the cardname
+            var cardLabel = $("<p />",
+            {
+                text: cardData.card.name + " x" + cardData.amount
+            });
+            //create the "minus" button
+            var minusButton = $('<div />',
+            {
+                "class": "minusButton glyphicon glyphicon-remove"
+            });
+
+            //attach the elements together
+            cardLabel.appendTo(container);
+            minusButton.appendTo(container);
+
+            //bind a Jquery .on click event to the plusIcon, and bind the card data to the icon
+            minusButton.on("click",
+                cardData.card,
+                function(e) {
+                    removeCardFromDeckBuilder(e.data);
+                    printCardsInDeckBuilder();
+                });
+
+            //return the containing element
+            return container;
         }
 
         /**
