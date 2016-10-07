@@ -19,6 +19,8 @@
     border-radius: 4px;
     font-size: 16px;
     background-color: #e1e1e1;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 h1-custom {
@@ -30,6 +32,7 @@ h1-custom {
   color: black;
   font-family: "Open Sans", Serif;
   text-transform: uppercase;
+  margin-bottom: 10px;
 }
 h1-custom:before, h1-custom:after {
   background-color: #5b5b5b;
@@ -69,7 +72,7 @@ h1-custom:after {
 }
 
 .padding-small {
-    padding: 5px 5px 5px 5px;
+    padding: 5px;
 }
 
 .padding-top-small {
@@ -101,6 +104,10 @@ h1-custom:after {
 .padding-left-large {
     padding-left: 40px;
 }
+
+.margin-bottom-Medium {
+    margin-bottom: 20px;
+}
 /* ----------------------nav bar------------------------------ */
 .navbar {
     display: flex;
@@ -114,7 +121,6 @@ h1-custom:after {
     background: linear-gradient(#131313, #454444); /* Standard syntax */
 }
 .navbar-brand img {
-
     width: 340px;
     height: auto;
 }
@@ -140,14 +146,14 @@ h1-custom:after {
 
 .container-left {
     margin-top: 50px;
-    height: 1000px;
+    height: auto;
     padding: 10px;
     padding-right: 20px;
 }
 
 .container-right {
     margin-top: 50px;
-    height: 1000px;
+    height: auto;
     padding: 10px;
     padding-left: 20px;
 }
@@ -181,8 +187,7 @@ label {
 
 .small-input {
     position: absolute;
-    width: 7%;
-    max-width: 500px;
+    width: 40px;
     box-sizing: border-box;
     border: 2px solid #5b5b5b;
     border-radius: 4px;
@@ -199,42 +204,48 @@ select {
 }
 
 .cardSearchResults {
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
+    align-content: center;
+
 }
 
 .cardResult {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    max-width: 45%;
-    margin: 10px 0 0 0;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    width: 45%;
+    min-width: 225px;
+    height: auto;
+    margin: 10px;
+    padding-left: 10px;
+    padding-top: 10px;
 }
 
 .card {
-    display: flex;
-    max-width: 100%;
-    height: auto;
-    margin-top: 40px;
-}
-
-.cardAddToResults {
-    display: flex;
-    margin-left: 5px;
-    height: 30px;
-    width: 30px;
-}
-
-.cardAddToResults:active {
-    background-color: #9d9d9d;
-    border-radius: 30px;
+    margin-top: 10px;
+    width: 223px;
+    height: 310px;
 }
 
 .cardTitle {
-    align-content: space-between;
-    flex: 1;
-    margin: 5px;
+    width: 70%;
+    height: auto;
+}
+
+.moveCard {
+    display: flex;
+    margin-left: 20px;
+    height: 30px;
+    width: 30px;
+    align-self: center;
+}
+
+.moveCard:active {
+    background-color: #9d9d9d;
+    border-radius: 30px;
 }
 
 .noSelect {
@@ -252,5 +263,9 @@ select {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.cardListItem {
+    margin-bottom: 20px;
 }
 

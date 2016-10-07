@@ -12,7 +12,7 @@
                 <form class="card-search">
                     <div class="form-group">
                         <label for="cardName" id="cardNameLabel">Card Name</label>
-                        <input type="text" placeholder="card name" id="cardName" class="input-big search-icon padding-vertical-small padding-right-small padding-left-large">
+                        <input type="text" placeholder="Card Name" id="cardName" class="input-big search-icon padding-vertical-small padding-right-small padding-left-large">
                     </div>
 
                     <label id="colourLabel">Colours</label>
@@ -80,7 +80,7 @@
             </div>
             <div class="form-group">
                 <label for="description">Description</label>
-                <textarea maxlength="250" rows="4" name="Description" id="Description" class="input-big padding-small"></textarea>
+                <textarea maxlength="250" rows="4" name="Description" id="Description" class="input-big padding-small" placeholder="Add a description of your deck"></textarea>
             </div>
             <div class="form-group pushRight">
                 <label class="checkbox-inline">
@@ -273,14 +273,15 @@
             var plusIcon = $("<img />",
             {
                 src: "/images/plusIcon.png",
-                "class": "cardAddToResults"
+                "class": "moveCard"
             });
 
             //append the elements together
             title.append(cardData.name);
             title.appendTo(containingDiv);
-            image.appendTo(containingDiv);
             plusIcon.appendTo(containingDiv);
+            image.appendTo(containingDiv);
+            
 
             //bind a Jquery .on click event to the plusIcon, and bind the card data to the icon
             plusIcon.on("click",
@@ -376,7 +377,7 @@
             //create the containing div that will house the card data
             var container = $('<div />',
             {
-                "class": "lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between"
+                "class": "cardListItem lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between"
             });
             //create the label for the cardname
             var cardLabel = $("<p />",
@@ -384,9 +385,10 @@
                 text: cardData.card.name + " x" + cardData.amount
             });
             //create the "minus" button
-            var minusButton = $('<div />',
+            var minusButton = $("<img />",
             {
-                "class": "minusButton glyphicon glyphicon-remove"
+                src: "/images/minusIcon.png",
+                "class": "moveCard"
             });
 
             //attach the elements together
