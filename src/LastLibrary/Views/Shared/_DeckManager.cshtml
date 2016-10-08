@@ -1,0 +1,94 @@
+﻿<div class="col-md-12">
+    <div class="container-left col-md-6">
+        <h1-custom>Search</h1-custom>
+        <div id="cardSearchForm">
+            <form class="card-search">
+                <div class="form-group">
+                    <label for="cardName" id="cardNameLabel">Card Name</label>
+                    <input type="text" placeholder="Card Name" id="cardName" class="input-big search-icon padding-vertical-small padding-right-small padding-left-large">
+                </div>
+
+                <label id="colourLabel">Colours</label>
+                <div class="form-group">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="black" id="colourBlack"> Black
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="white" id="colourWhite"> White
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="blue" id="colourBlue"> Blue
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="green" id="colourGreen"> Green
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="red" id="colourRed"> Red
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="power" if="powerLabel">Power</label>
+                    <input type="text" placeholder="2" id="power" class="small-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="toughness" id="toughnessLabel">Toughness</label>
+                    <input type="text" placeholder="2" id="toughness" class="small-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="mana" id="manaLabel">Converted Mana Cost</label>
+                    <input type="text" placeholder="2" id="mana" class="small-input">
+                </div>
+
+
+                <label id="raritylabel">Card Rarity</label>
+                <select id="rarity">
+                    <option value="Any" selected>Any</option>
+                    <option value="Common">Common</option>
+                    <option value="Uncommon">Uncommon</option>
+                    <option value="Rare">Rare</option>
+                    <option value="Mythic Rare">Mythic Rare</option>
+                </select>
+
+
+                <div class="submitButton">
+                    <button id="cardSearchButton" class="btn btn-default customButton">Search</button>
+                </div>
+
+            </form>
+        </div>
+
+        <h1-custom>Search Result</h1-custom>
+        <div id="cardSearchResults" class="cardSearchResults"></div>
+
+
+    </div>
+    <div class="container-right col-md-6">
+        <h1-custom>Your Deck</h1-custom>
+        <div class="form-group">
+            <label for="deckName">Deck Name</label>
+            <input type="text" placeholder="Deck name" id="deckName" class="input-big padding-small">
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea maxlength="250" rows="4" name="Description" id="Description" class="input-big padding-small" placeholder="Add a description of your deck"></textarea>
+        </div>
+        <div class="form-group pushRight">
+            <label class="checkbox-inline">
+                <input type="checkbox" value="isPublic" id="isPublic"> Make Public
+            </label>
+        </div>
+
+        <p> Current Cards: </p>
+
+        <div id="currentDeck"></div>
+
+        <div class="submitButton">
+            <button id="deckSaveButton" class="btn btn-default customButton">Save Deck</button>
+        </div>
+
+
+    </div>
+</div>

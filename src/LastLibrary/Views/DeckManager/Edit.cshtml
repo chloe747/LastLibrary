@@ -1,0 +1,17 @@
+﻿@using Newtonsoft.Json
+@model LastLibrary.Models.DeckManagerViewModel.DeckModel
+@{
+    ViewBag.Title = "Edit Deck";
+    Layout = "_Layout";
+}
+
+<input id="deckId" value="@Model.Id.ToString()" hidden/>
+<script id="deckJson" type="application/json">
+    @Html.Raw(JsonConvert.SerializeObject(Model))
+</script>
+
+@Html.Partial("_DeckManager", Model)
+
+@section scripts{
+    <script type="text/javascript" src="@Url.Content("/js/DeckManager/editDeck.js")"></script>
+}
