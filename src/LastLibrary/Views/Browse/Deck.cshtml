@@ -1,6 +1,7 @@
 ﻿@using System.Globalization
 @using System.Threading.Tasks
 @model LastLibrary.Models.BrowseModels.DeckViewModel
+@inject SignInManager<ApplicationUser> SignInManager
 
 @{
     ViewBag.Title = Model.Deck.DeckName;
@@ -90,10 +91,81 @@
             <img class="margin-bottom-small" src="@card.Card.ImageUrl" alt="@card.Card.MultiverseId"/>
         }
     </div>
+
+    <div>
+        <div class="lastLibrary-flex lastLibrary-flex--column">
+            @if (Model.Deck.Comments != null && Model.Deck.Comments.Count > 0)
+            {
+                foreach (var comment in Model.Deck.Comments)
+                {
+                    <div class="lastLibrary-flex lastLibrary-flex--column">
+                        <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between">
+                            <p>
+                                @comment.Commenter
+                            </p>
+                            <p>
+                                @comment.CommentDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                            </p>
+                        </div>
+                        <p>
+                            @comment.Comment
+                        </p>
+                    </div>
+                }
+
+            }
+        </div>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <form class="addCommentGroup">
+            <div class="form-group">
+                <label for="addComment" id="cardNameLabel">Comment</label>
+                <textarea rows="4" name="addComment" id="addComment" class="input-comment padding-small" placeholder="Write a comment..."></textarea>
+            </div>
+        </form>
+
+        <div class="submitButton">
+            <button id="commentSaveButton" class="btn btn-default customButton" onclick="saveComment('@Model.Deck.Id.ToString()')">Write Comment</button>
+        </div>
+    }
+    </div>
 </div>
 
 @section scripts{
     <script type="text/javascript">
+        
+        /**
+         * Function that initiated and handles a call to the back-end to save the user's comment
+         */
+        function saveComment(deckId) {
+            //get the comment from the user
+            var comment = $("#addComment").val();
+
+            //make sure there is data in the comment
+            if (comment === undefined || comment === null || comment.length === 0) return null;
+
+            //create the object to send to the server
+            var requestContent = {
+                comment
+            };
+
+            //send the request to the server
+            $.ajax({
+                type: "POST",
+                url: "/api/Deck/Comment/" + deckId,
+                contentType: 'application/json',
+                data: JSON.stringify(requestContent),
+                success: function () {
+                    $("#addComment").val("");
+                    location.reload();
+                },
+                error: function () {
+                    console.error("Unable to save deck");
+                }
+            });
+            return false;
+        }
+
         /**
          * Function that, when called, will send of an ajax call to the server to delete the
          * requested deck by the deck's ID

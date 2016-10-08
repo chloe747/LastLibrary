@@ -169,5 +169,30 @@ namespace LastLibrary.Services.MongoDb
 
             return HttpStatusCode.OK;
         }
+
+        public HttpStatusCode AddCommentToDeck(CommentData comment, string deckId)
+        {
+            FilterDefinition<DeckModel> filter;
+            try
+            {
+                filter = Builders<DeckModel>.Filter.Eq("_id", ObjectId.Parse(deckId));
+            }
+            catch
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
+            var update = Builders<DeckModel>.Update.Push<CommentData>(e => e.Comments, comment);
+            var result = DecksCollection.UpdateOneAsync(filter, update);
+
+            Task.WaitAny(result);
+
+            //error handling
+            if ((result.IsFaulted) || (result.IsFaulted))
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+            return HttpStatusCode.OK;
+        }
     }
 }

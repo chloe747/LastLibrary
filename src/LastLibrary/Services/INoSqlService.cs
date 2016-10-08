@@ -17,5 +17,6 @@ namespace LastLibrary.Services
         DeckModel GetDeckById(string deckId);
         HttpStatusCode DeleteDeck(string deckId);
         HttpStatusCode UpdateDeckById(string deckId, DeckModel replacementDeck);
+        HttpStatusCode AddCommentToDeck(CommentData comment, string deckId);
     }
 }
