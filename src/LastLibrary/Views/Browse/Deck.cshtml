@@ -1,0 +1,125 @@
+﻿@using System.Globalization
+@using System.Threading.Tasks
+@model LastLibrary.Models.BrowseModels.DeckViewModel
+
+@{
+    ViewBag.Title = Model.Deck.DeckName;
+    Layout = "_Layout";
+}
+
+<div class="headerPadding"></div>
+<div class="col-md-12">
+    <h1-custom>@Model.Deck.DeckName</h1-custom>
+    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around">
+        <p>
+            Colours:
+            @{
+                var orderedColourSpread = Model.Deck.ColourSpread.OrderByDescending(el => el.Percentage).ToList();
+                foreach (var colour in orderedColourSpread)
+                {
+                    if (string.Compare(colour.Colour, "red", StringComparison.CurrentCultureIgnoreCase) == 0)
+                    {
+                        <span class="mana small sr"></span>
+                    }
+                    else if (string.Compare(colour.Colour, "blue", StringComparison.CurrentCultureIgnoreCase) == 0)
+                    {
+                        <span class="mana small su"></span>
+                    }
+                    else if (string.Compare(colour.Colour, "black", StringComparison.CurrentCultureIgnoreCase) == 0)
+                    {
+                        <span class="mana small sb"></span>
+                    }
+                    else if (string.Compare(colour.Colour, "green", StringComparison.CurrentCultureIgnoreCase) == 0)
+                    {
+                        <span class="mana small sg"></span>
+                    }
+                    else if (string.Compare(colour.Colour, "white", StringComparison.CurrentCultureIgnoreCase) == 0)
+                    {
+                        <span class="mana small sw"></span>
+                    }
+                }
+            }
+        </p>
+        <p>
+            Creator: @Model.Deck.Creator
+        </p>
+        <p>
+            @if (!Model.Deck.IsPublic)
+            {
+                <text>
+                    Private Deck
+                </text>
+            }
+            else
+            {
+                <text>
+                    Not Yet Rated
+                </text>
+            }
+        </p>
+        <p>
+            Times Rated: 0
+        </p>
+        <p>
+            Posted: @Model.Deck.CreationDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+        </p>
+    </div>
+    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--justify-center">
+        <p>
+            <em>
+                @Model.Deck.Description
+            </em>
+        </p>
+    </div>
+    @if (Model.IsCreator)
+    {
+        <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--justify-flex-end">
+            <div class="col-md-3 lastLibrary-flex lastLibrary-flex--justify-space-around">
+                <a asp-area="" asp-controller="DeckManager" asp-action="Edit" asp-route-id="@Model.DeckId">
+                    Edit
+                </a>
+                <a href="#" onclick="deleteDeck(event, '@Model.DeckId')">
+                    Delete
+                </a>
+            </div>
+        </div>
+    }
+    <div class="margin-top-Medium lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around lastLibrary-flex--wrap">
+        @foreach (var card in Model.Deck.Cards)
+        {
+            <img class="margin-bottom-small" src="@card.Card.ImageUrl" alt="@card.Card.MultiverseId"/>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        /**
+         * Function that, when called, will send of an ajax call to the server to delete the
+         * requested deck by the deck's ID
+         *
+         * @@param {string} deckId - The id of the deck to delete
+         */
+        function deleteDeck(e, deckId) {
+
+            e.preventDefault();
+
+            //make sure we got a deck ID to send to the server
+            if (deckId === undefined || deckId === null) return false;
+
+            //otherwise, make a call to the server to delete the deck
+            $.ajax({
+                type: "DELETE",
+                url: "/api/Deck/" + deckId,
+                success: function() {
+                    //refresh the page to get the new data from the server
+                    location.reload();
+                },
+                error: function() {
+                    console.error("Unable to delete deck");
+                }
+            });
+            return true;
+        }
+    </script>
+}
