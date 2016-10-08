@@ -14,6 +14,7 @@ namespace LastLibrary.Services
         ICollection<DeckModel> GetDecksForUser(string userName);
         ICollection<DeckModel> GetDecksByDeckName(string deckName);
         ICollection<DeckModel> GetDecksByUserNameAndDeckName(string userName, string deckName);
+        DeckModel GetDeckById(string deckId);
         HttpStatusCode DeleteDeck(string deckId);
     }
 }
