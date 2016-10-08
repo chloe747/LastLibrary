@@ -1,20 +1,20 @@
 ﻿@using System.Globalization
 @using System.Threading.Tasks
-@model LastLibrary.Models.DeckManagerViewModel.DeckModel
+@model LastLibrary.Models.BrowseModels.DeckViewModel
 
 @{
-    ViewBag.Title = Model.DeckName;
+    ViewBag.Title = Model.Deck.DeckName;
     Layout = "_Layout";
 }
 
 <div class="headerPadding"></div>
 <div class="col-md-12">
-    <h1-custom>@Model.DeckName</h1-custom>
+    <h1-custom>@Model.Deck.DeckName</h1-custom>
     <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around">
         <p>
             Colours:
             @{
-                var orderedColourSpread = Model.ColourSpread.OrderByDescending(el => el.Percentage).ToList();
+                var orderedColourSpread = Model.Deck.ColourSpread.OrderByDescending(el => el.Percentage).ToList();
                 foreach (var colour in orderedColourSpread)
                 {
                     if (string.Compare(colour.Colour, "red", StringComparison.CurrentCultureIgnoreCase) == 0)
@@ -41,10 +41,10 @@
             }
         </p>
         <p>
-            Creator: @Model.Creator
+            Creator: @Model.Deck.Creator
         </p>
         <p>
-            @if (!Model.IsPublic)
+            @if (!Model.Deck.IsPublic)
             {
                 <text>
                     Private Deck
@@ -61,20 +61,65 @@
             Times Rated: 0
         </p>
         <p>
-            Posted: @Model.CreationDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+            Posted: @Model.Deck.CreationDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
         </p>
     </div>
     <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--justify-center">
         <p>
             <em>
-                @Model.Description
+                @Model.Deck.Description
             </em>
         </p>
     </div>
-    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around lastLibrary-flex--wrap">
-        @foreach (var card in Model.Cards)
+    @if (Model.IsCreator)
+    {
+        <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--justify-flex-end">
+            <div class="col-md-3 lastLibrary-flex lastLibrary-flex--justify-space-around">
+                <a asp-area="" asp-controller="DeckManager" asp-action="Edit" asp-route-id="@Model.DeckId">
+                    Edit
+                </a>
+                <a href="#" onclick="deleteDeck(event, '@Model.DeckId')">
+                    Delete
+                </a>
+            </div>
+        </div>
+    }
+    <div class="margin-top-Medium lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around lastLibrary-flex--wrap">
+        @foreach (var card in Model.Deck.Cards)
         {
             <img class="margin-bottom-small" src="@card.Card.ImageUrl" alt="@card.Card.MultiverseId"/>
         }
     </div>
 </div>
+
+@section scripts{
+    <script type="text/javascript">
+        /**
+         * Function that, when called, will send of an ajax call to the server to delete the
+         * requested deck by the deck's ID
+         *
+         * @@param {string} deckId - The id of the deck to delete
+         */
+        function deleteDeck(e, deckId) {
+
+            e.preventDefault();
+
+            //make sure we got a deck ID to send to the server
+            if (deckId === undefined || deckId === null) return false;
+
+            //otherwise, make a call to the server to delete the deck
+            $.ajax({
+                type: "DELETE",
+                url: "/api/Deck/" + deckId,
+                success: function() {
+                    //refresh the page to get the new data from the server
+                    location.reload();
+                },
+                error: function() {
+                    console.error("Unable to delete deck");
+                }
+            });
+            return true;
+        }
+    </script>
+}

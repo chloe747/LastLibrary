@@ -54,20 +54,27 @@ namespace LastLibrary.Controllers
             {
                 deck = NoSqlService.GetDeckById(id);
             }
-            catch (HttpResponseException e)
+            catch
             {
-                throw e;
+                return RedirectToAction("Index");
             }
             //check to see if the user is logged in
             if (User.Identity.IsAuthenticated)
             {
+                var isUsersDeck = string.Compare(deck.Creator, User.Identity.Name, StringComparison.CurrentCulture) == 0;
                 //if the user is logged in, they can view public decks and thier own decks
-                if (!deck.IsPublic &&
-                    (string.Compare(deck.Creator, User.Identity.Name, StringComparison.CurrentCulture) != 0))
+                if (!deck.IsPublic && !isUsersDeck)
                 {
                     return RedirectToAction("Index");
                 }
-                return View(deck);
+                //if this is the user's deck, they give them editing/deletion controls
+                var viewModel = new DeckViewModel()
+                {
+                    Deck = deck,
+                    DeckId = deck.Id.ToString(),
+                    IsCreator = isUsersDeck
+                };
+                return View(viewModel);
             }
             else
             {
@@ -76,7 +83,12 @@ namespace LastLibrary.Controllers
                 {
                     return RedirectToAction("Index");
                 }
-                return View(deck);
+                var viewModel = new DeckViewModel()
+                {
+                    Deck = deck,
+                    IsCreator = false
+                };
+                return View(viewModel);
             }
         }
     }
