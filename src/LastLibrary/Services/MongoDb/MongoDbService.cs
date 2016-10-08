@@ -143,5 +143,31 @@ namespace LastLibrary.Services.MongoDb
                 : HttpStatusCode.OK;
         }
 
+        public HttpStatusCode UpdateDeckById(string deckId, DeckModel replacementDeck)
+        {
+            //create the BSON id model to find
+            FilterDefinition<DeckModel> filter;
+            try
+            {
+                filter = Builders<DeckModel>.Filter.Eq("_id", ObjectId.Parse(deckId));
+            }
+            catch
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
+
+            //find the matching deck ID
+            var result = DecksCollection.ReplaceOneAsync(filter, replacementDeck);
+
+            Task.WaitAny(result);
+
+            //error handling
+            if ((result.IsFaulted) || (result.IsFaulted))
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+            return HttpStatusCode.OK;
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace LastLibrary.Models.DeckManagerViewModel
     [BsonIgnoreExtraElements]
     public class DeckModel
     {
+        [BsonIgnoreIfDefault]
         public ObjectId Id { get; set; }
         [Required]
         [RegularExpression("^[a-zA-Z0-9 ]*$", ErrorMessage = "Alphanumeric Characters Only")]

@@ -77,6 +77,71 @@ namespace LastLibrary.Controllers
             return response;
         }
 
+        /**
+         * Route used to update a deck
+         */
+        [HttpPut]
+        [Route("api/Deck/{id}")]
+        public HttpStatusCode Put(string id, [FromBody] DeckModel deckModel)
+        {            
+            //if the request has an invalid body
+            if (!ModelState.IsValid)
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
+
+            //make sure the user is logged in
+            if (!User.Identity.IsAuthenticated)
+            {
+                throw new HttpResponseException(HttpStatusCode.Forbidden);
+            }
+
+            //get the user        
+            var getUserTask = UserManager.GetUserAsync(HttpContext.User);
+
+            Task.WaitAny(getUserTask);
+
+            var user = getUserTask.Result;
+
+            //get the current deck with the requested id
+            DeckModel deck;
+            try
+            {
+                deck = NoSqlService.GetDeckById(id);
+            }
+            catch
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+            //make sure the deck belongs to the current user
+            if (string.Compare(deck.Creator, user.UserName, StringComparison.CurrentCulture) != 0)
+            {
+                throw new HttpResponseException(HttpStatusCode.Forbidden);
+            }
+
+            //set the Creator to the current user
+            deckModel.Creator = user.UserName;
+
+            //work out the colour spread of the deck
+            deckModel.ColourSpread = DeckBuilderHelper.CalculateColourSpread(deckModel.Cards);
+
+            //set the creation time to now
+            deckModel.CreationDate = DateTime.Now;
+
+            //update the deck with the new data
+            HttpStatusCode statusCode;
+            try
+            {
+                statusCode = NoSqlService.UpdateDeckById(id, deckModel);
+            }
+            catch
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+            return statusCode;
+        }
+
         [HttpGet]
         [Route("api/Deck")]
         public async Task<ICollection<DeckModel>> GetDecksForUser()

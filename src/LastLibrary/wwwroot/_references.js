@@ -1,4 +1,6 @@
 ﻿/// <autosync enabled="true" />
+/// <reference path="js/deckmanager/editdeck.js" />
+/// <reference path="js/deckmanager/newdeck.js" />
 /// <reference path="js/foreachpolyfill.js" />
 /// <reference path="js/site.js" />
 /// <reference path="lib/bootstrap/dist/js/bootstrap.js" />

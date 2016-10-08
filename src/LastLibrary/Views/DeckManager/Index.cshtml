@@ -1,7 +1,10 @@
-﻿@model LastLibrary.Models.DeckManagerViewModel.DeckModel
-@{
+﻿@{
     ViewBag.Title = "New Deck";
     Layout = "_Layout";
 }
 
-@Html.Partial("_DeckManager", Model)
+@Html.Partial("_DeckManager")
+
+@section scripts{
+    <script type="text/javascript" src="@Url.Content("/js/DeckManager/newDeck.js")"></script>
+}
