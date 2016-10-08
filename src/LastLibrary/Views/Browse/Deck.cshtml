@@ -1,0 +1,80 @@
+﻿@using System.Globalization
+@using System.Threading.Tasks
+@model LastLibrary.Models.DeckManagerViewModel.DeckModel
+
+@{
+    ViewBag.Title = Model.DeckName;
+    Layout = "_Layout";
+}
+
+<div class="headerPadding"></div>
+<div class="col-md-12">
+    <h1-custom>@Model.DeckName</h1-custom>
+    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around">
+        <p>
+            Colours:
+            @{
+                var orderedColourSpread = Model.ColourSpread.OrderByDescending(el => el.Percentage).ToList();
+                foreach (var colour in orderedColourSpread)
+                {
+                    if (string.Compare(colour.Colour, "red", StringComparison.CurrentCultureIgnoreCase) == 0)
+                    {
+                        <span class="mana small sr"></span>
+                    }
+                    else if (string.Compare(colour.Colour, "blue", StringComparison.CurrentCultureIgnoreCase) == 0)
+                    {
+                        <span class="mana small su"></span>
+                    }
+                    else if (string.Compare(colour.Colour, "black", StringComparison.CurrentCultureIgnoreCase) == 0)
+                    {
+                        <span class="mana small sb"></span>
+                    }
+                    else if (string.Compare(colour.Colour, "green", StringComparison.CurrentCultureIgnoreCase) == 0)
+                    {
+                        <span class="mana small sg"></span>
+                    }
+                    else if (string.Compare(colour.Colour, "white", StringComparison.CurrentCultureIgnoreCase) == 0)
+                    {
+                        <span class="mana small sw"></span>
+                    }
+                }
+            }
+        </p>
+        <p>
+            Creator: @Model.Creator
+        </p>
+        <p>
+            @if (!Model.IsPublic)
+            {
+                <text>
+                    Private Deck
+                </text>
+            }
+            else
+            {
+                <text>
+                    Not Yet Rated
+                </text>
+            }
+        </p>
+        <p>
+            Times Rated: 0
+        </p>
+        <p>
+            Posted: @Model.CreationDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+        </p>
+    </div>
+    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--justify-center">
+        <p>
+            <em>
+                @Model.Description
+            </em>
+        </p>
+    </div>
+    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around lastLibrary-flex--wrap">
+        @foreach (var card in Model.Cards)
+        {
+            <img class="margin-bottom-small" src="@card.Card.ImageUrl" alt="@card.Card.MultiverseId"/>
+        }
+    </div>
+</div>

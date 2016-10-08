@@ -31,7 +31,9 @@
                                 <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--justify-space-between">
                                     <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-center">
                                         <div class="placeholder-square--purple"></div>
-                                        <p class="padding-left-small">@deckData.deck.DeckName</p>
+                                    <a asp-area="" asp-controller="Browse" asp-action="Deck" asp-route-id="@deckData.deck.Id" class="padding-left-small">
+                                        @deckData.deck.DeckName
+                                    </a>
                                     </div>
                                     <div class="lastLibrary-flex lastLibrary-flex--row">
                                         @{

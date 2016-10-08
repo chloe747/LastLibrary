@@ -127,7 +127,7 @@ namespace LastLibrary.Controllers
             deckModel.ColourSpread = DeckBuilderHelper.CalculateColourSpread(deckModel.Cards);
 
             //set the creation time to now
-            deckModel.CreationDate = DateTime.Now;
+            deckModel.CreationDate = deck.CreationDate;
 
             //update the deck with the new data
             HttpStatusCode statusCode;
