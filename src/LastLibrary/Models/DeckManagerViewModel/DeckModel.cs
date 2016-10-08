@@ -26,6 +26,9 @@ namespace LastLibrary.Models.DeckManagerViewModel
 
         [Required]
         public ICollection<CardsInDeck> Cards { get; set; }
+
+        [BsonIgnoreIfDefault]
+        public Collection<CommentData> Comments { get; set; }
     }
 
     public class ColourSpread
@@ -38,5 +41,12 @@ namespace LastLibrary.Models.DeckManagerViewModel
     {
         public int Amount { get; set; }
         public CardModel Card { get; set; }
+    }
+
+    public class CommentData
+    {
+        public string Comment { get; set; }
+        public DateTime CommentDate { get; set; }
+        public string Commenter { get; set; }
     }
 }

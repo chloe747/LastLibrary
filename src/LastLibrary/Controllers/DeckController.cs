@@ -129,6 +129,9 @@ namespace LastLibrary.Controllers
             //set the creation time to now
             deckModel.CreationDate = deck.CreationDate;
 
+            //copy the comments over
+            deckModel.Comments = deck.Comments;
+
             //update the deck with the new data
             HttpStatusCode statusCode;
             try
@@ -175,12 +178,101 @@ namespace LastLibrary.Controllers
             return NoSqlService.GetDecksByUserNameAndDeckName(Uri.UnescapeDataString(userName), Uri.UnescapeDataString(deckName));
         }
 
+        /**
+         * Route to delete a deck by ID
+         */
         [HttpDelete]
         [Route("api/Deck/{id}")]
         public HttpStatusCode DeleteDeckById(string id)
-        {
+        {            
+            //make sure the user is logged in
+            if (!User.Identity.IsAuthenticated)
+            {
+                throw new HttpResponseException(HttpStatusCode.Forbidden);
+            }
+
+            //get the user        
+            var getUserTask = UserManager.GetUserAsync(HttpContext.User);
+
+            Task.WaitAny(getUserTask);
+
+            var user = getUserTask.Result;
+
+            //get the deck to delete
+            DeckModel deck;
+            try
+            {
+                deck = NoSqlService.GetDeckById(id);
+            }
+            catch (HttpResponseException e)
+            {
+                throw e;
+            }
+
+            //make sure that the deck belongs to the user
+            if (string.Compare(user.UserName, deck.Creator, StringComparison.CurrentCulture) != 0)
+            {
+                throw new HttpResponseException(HttpStatusCode.Forbidden);
+            }
+
+            //delete the deck
             return NoSqlService.DeleteDeck(id);
         }
+
+        [HttpPost]
+        [Route("api/Deck/Comment/{deckId}")]
+        public HttpStatusCode AddCommentToDeck(string deckId, [FromBody] CommentData comment)
+        {
+            //make sure the user is logged in to comment
+            if (!User.Identity.IsAuthenticated)
+            {
+                throw new HttpResponseException(HttpStatusCode.Forbidden);
+            }
+
+            //get the deck to delete
+            DeckModel deck;
+            try
+            {
+                deck = NoSqlService.GetDeckById(deckId);
+            }
+            catch (HttpResponseException e)
+            {
+                throw e;
+            }
+
+            //get the user        
+            var getUserTask = UserManager.GetUserAsync(HttpContext.User);
+
+            Task.WaitAny(getUserTask);
+
+            var user = getUserTask.Result;           
+             
+            //make sure the deck is public, you can only comment on public decks if you don't own them
+            if (!deck.IsPublic && string.Compare(deck.Creator, user.UserName, StringComparison.CurrentCulture) != 0)
+            {
+                throw new HttpResponseException(HttpStatusCode.Forbidden);
+            }
+
+            //add the username to the comment data
+            comment.Commenter = user.UserName;
+
+            //add the current date to the comment
+            comment.CommentDate = DateTime.Now;
+            
+            //save the comment
+            HttpStatusCode result;
+            try
+            {
+                result = NoSqlService.AddCommentToDeck(comment, deckId);
+            }
+            catch (HttpResponseException e)
+            {
+                throw e;
+            }
+
+            return result;
+        }
+
 
     }
 }
