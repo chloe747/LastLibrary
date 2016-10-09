@@ -1,8 +1,301 @@
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Search Decks";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="headerPadding"></div>
 <div class="col-md-12">
-    <h1-custom>Browse Decks</h1-custom>
+    <div class="container-left col-md-6">
+        <h1-custom>Search</h1-custom>
+        <div id="cardSearchForm">
+            <form class="deck-search">
+                <div class="form-group">
+                    <label for="deckName" id="deckNameLabel">Deck Name</label>
+                    <input type="text" placeholder="Deck Name" id="deckName" class="input-big search-icon padding-vertical-small padding-right-small padding-left-large">
+                </div>
+
+                <div class="form-group">
+                    <label for="creatorName" id="creatorNameLabel">Creator's Name</label>
+                    <input type="text" placeholder="Creator Name" id="creatorName" class="input-big search-icon padding-vertical-small padding-right-small padding-left-large">
+                </div>
+
+                <label id="colourLabel">Colours</label>
+                <div class="form-group">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="black" id="colourBlack"> Black
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="white" id="colourWhite"> White
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="blue" id="colourBlue"> Blue
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="green" id="colourGreen"> Green
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="red" id="colourRed"> Red
+                    </label>
+                </div>
+
+                <div class="submitButton">
+                    <button id="deckSearchButton" class="btn btn-default customButton">Search</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="col-md-6 container-right">
+        <h1-custom>Search Result</h1-custom>
+        <div id="deckSearchResults" class="deckSearchResults"></div>
+    </div>
 </div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(function() {
+            //apply click handler to the 'search for cards' button
+            $("#deckSearchButton")
+                .click(function(e) {
+                    e.preventDefault();
+                    requestDecks();
+                });
+
+            //apply the enter key handler on the deck name field
+            $('#deckName')
+                .on('keypress',
+                    function(e) {
+                        if (e.keyCode === 13) {
+                            e.preventDefault();
+                            requestDecks();
+                        }
+                    });
+
+            //apply the enter key handler on the creator's name field
+            $('#creatorName')
+                .on('keypress',
+                    function(e) {
+                        if (e.keyCode === 13) {
+                            e.preventDefault();
+                            requestDecks();
+                        }
+                    });
+
+        });
+
+        /**
+         * Function that gathers the currently entered form data, stores the data in a JSON and sends a request to the
+         * card API hosted on our back-end.
+         */
+        function requestDecks() {
+
+            //get a reference to the deck search results area
+            var deckSearchResultsArea = $("#deckSearchResults");
+
+            //create the request object
+            var requestContent = {
+                "isblue": $("#colourBlue").is(":checked"),
+                "isRed": $("#colourRed").is(":checked"),
+                "isGreen": $("#colourGreen").is(":checked"),
+                "iswhite": $("#colourWhite").is(":checked"),
+                "isblack": $("#colourBlack").is(":checked"),
+                "deckName": $("#deckName").val(),
+                "userName": $("#creatorName").val()
+            };
+
+            //before we send the data to the server, set a "loading" element in the search results
+            var loadingElement = createLoadingElement();
+            loadingElement.appendTo(deckSearchResultsArea);
+
+            //send the Ajax call to the server
+            $.ajax({
+                type: "POST",
+                url: "/api/Deck/Search/",
+                contentType: 'application/json',
+                data: JSON.stringify(requestContent),
+                success: function(response) {
+                    //remove the previous search results
+                    deckSearchResultsArea.empty();
+                    console.log(response);
+
+                    //make sure we got an element back
+                    if (response !== undefined && response !== null && response.length > 0) {
+                        response.forEach(function(deck) {
+                            //create the deck element using the resulting card data
+                            var deckElement = createDeckElement(deck);
+
+                            //if we didn't get an element back, continue on to the next element
+                            if (deckElement === null || deckElement === undefined) return;
+
+                            //otherwise, append the card element to the results section
+                            deckElement.appendTo(deckSearchResultsArea);
+                        });
+                    }
+                },
+                error: function() {
+                    console.error("Unable to query deck api");
+                }
+            });
+            return false;
+
+        }
+
+        /**
+         * Function that creates a loading element
+         *
+         * @@returns {element} - The loading element
+         */
+        function createLoadingElement() {
+            //empty the search results
+            $("#deckSearchResults").empty();
+
+            //TODO - Implement proper loading element, not just a text based element
+            var loadingElement = $('<p />',
+            {
+                text: "Loading..."
+            });
+            return loadingElement;
+        }
+
+        /**
+         * Function that creates DOM elements to display a magic the gathering deck using the data passed into the function
+         *
+         * @@param {object} deckData - The card data used to display a M:tG deck
+         *
+         * @@returns {element} - A DOM element that will contain the overall deck element
+         */
+        function createDeckElement(deckData) {
+            console.log(deckData);
+
+            //create the container
+            var containingDiv = $("<div />",
+            {
+                "class": "lastLibrary-flex lastLibrary-flex--column"
+            });
+
+            //create the title
+            var titleContainer = $("<div />",
+            {
+                "class": "lastLibrary-flex lastLibrary-flex--row"
+            });
+
+            //append the magic mana symbols
+            if (deckData.deck.colourSpread !== null &&
+                deckData.deck.colourSpread !== undefined &&
+                deckData.deck.colourSpread.length > 0) {
+
+                deckData.deck.colourSpread.forEach(function(colour) {
+                    //get the colout class code
+                    var manaColour = "";
+                    switch (colour.colour.toUpperCase()) {
+                    case "RED":
+                        manaColour = "sr";
+                        break;
+                    case "WHITE":
+                        manaColour = "sw";
+                        break;
+                    case "GREEN":
+                        manaColour = "sg";
+                        break;
+                    case "BLACK":
+                        manaColour = "sb";
+                        break;
+                    case "BLUE":
+                        manaColour = "su";
+                        break;
+                    }
+
+                    //if the colour was a valid colour, append a span to show the symbol and append it to the title container
+                    if (manaColour !== "") {
+                        $("<span />",
+                            {
+                                "class": "mana xsmall " + manaColour
+                            })
+                            .appendTo(titleContainer);
+                    }
+                });
+            }
+
+            //append the Deck Title
+            $("<a />",
+                {
+                    "class": "padding-left-small",
+                    "text": deckData.deck.deckName,
+                    "href": deckData.url
+                })
+                .appendTo(titleContainer);
+
+            //create the content container
+            var imageAndDescriptionContainer = $("<div />",
+            {
+                "class": "lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between"
+            });
+
+            //create the image
+            var cardToDisplay = deckData.deck.cards[Math.floor(Math.random() * deckData.deck.cards.length)].card;
+            $("<img />",
+                {
+                    "src": cardToDisplay.imageUrl,
+                    "alt": cardToDisplay.name + " image"
+                })
+                .appendTo(imageAndDescriptionContainer);
+
+            //create the description container
+            var descriptionConatiner = $("<div />",
+            {
+                "class": "lastLibrary-flex lastLibrary-flex--column lastLibrary-flex--justify-space-between"
+            });
+
+            //create the description
+            $("<em />",
+                {
+                    "text": deckData.deck.description
+                })
+                .appendTo($("<p />"))
+                .appendTo(descriptionConatiner);
+
+            //create the author name
+            $("<p />",
+                {
+                    "text": deckData.deck.creator
+                })
+                .appendTo(descriptionConatiner);
+
+            //create the rating
+            var ratingText = "";
+            if (deckData.deck.ratings === null ||
+                deckData.deck.ratings === undefined ||
+                deckData.deck.ratings.length === 0) {
+
+                $("<p />",
+                    {
+                        "text": "Not yet rated"
+                    })
+                    .appendTo(descriptionConatiner);
+            } else {
+                var ratingScore = 0.0;
+                deckData.deck.ratings.forEach(function(rating) {
+                    ratingScore += rating;
+                });
+
+                ratingText = "Ave rating " + (ratingScore / deckData.deck.ratings.length) + "/5";
+                $("<p />",
+                    {
+                        "text": ratingText
+                    })
+                    .appendTo(descriptionConatiner);
+                $("<p />",
+                    {
+                        "text": deckData.deck.ratings.length + " ratings"
+                    })
+                    .appendTo(descriptionConatiner);
+            }
+
+            //append the containers together
+            titleContainer.appendTo(containingDiv);
+            descriptionConatiner.appendTo(imageAndDescriptionContainer);
+            imageAndDescriptionContainer.appendTo(containingDiv);
+
+            //return the final result
+            return containingDiv;
+        }
+    </script>
+}

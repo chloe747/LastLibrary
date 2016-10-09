@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using LastLibrary.Models;
 using LastLibrary.Models.DeckManagerViewModel;
 
 namespace LastLibrary.Services
@@ -21,5 +22,6 @@ namespace LastLibrary.Services
         HttpStatusCode RateDeckGetDeckById(string deckId, RatingData rating);
         ICollection<DeckModel> GetDecksByTopRated(int amount);
         ICollection<DeckModel> GetDecksByNewest(int amount);
+        ICollection<DeckModel> GetDecksByAdvancedSearch(DeckSearchOptionsModel opts);
     }
 }
