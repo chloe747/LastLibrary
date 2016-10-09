@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
+using LastLibrary.Models;
 using LastLibrary.Models.ConfigurationModels;
 using LastLibrary.Models.DeckManagerViewModel;
 using Microsoft.Extensions.Options;
@@ -271,6 +273,60 @@ namespace LastLibrary.Services.MongoDb
                     .ToList();
 
             return newestDecks;
+        }
+
+        public ICollection<DeckModel> GetDecksByAdvancedSearch(DeckSearchOptionsModel opts)
+        {
+            //create filters with the search options
+            var filter = Builders<DeckModel>.Filter.Eq(deck => deck.IsPublic, true);
+
+            //if we get a username, create a username filter
+            if ((opts.UserName != null) ||
+                (string.Compare(opts.UserName, "", StringComparison.CurrentCultureIgnoreCase) == 0))
+                filter = filter &
+                         Builders<DeckModel>.Filter.Regex(u => u.Creator,
+                             new BsonRegularExpression("/^(.*)"+ opts.UserName + "(.*?)$/i"));
+
+            //if we get a deckname, create a deckname filter
+            if ((opts.UserName != null) ||
+                (string.Compare(opts.UserName, "", StringComparison.CurrentCultureIgnoreCase) == 0))
+                filter = filter &
+                         Builders<DeckModel>.Filter.Regex(u => u.DeckName,
+                             new BsonRegularExpression("/^(.*)" + opts.DeckName + "(.*?)$/i"));
+
+            //add any colour filters
+            if (opts.IsBlack)
+                filter = filter &
+                         Builders<DeckModel>.Filter.ElemMatch(deck => deck.ColourSpread,
+                             colour => (colour.Colour == "Black") || (colour.Colour == "black"));
+            if (opts.IsBlue)
+                filter = filter &
+                         Builders<DeckModel>.Filter.ElemMatch(deck => deck.ColourSpread,
+                             colour => (colour.Colour == "Blue") || (colour.Colour == "blue"));
+            if (opts.IsGreen)
+                filter = filter &
+                         Builders<DeckModel>.Filter.ElemMatch(deck => deck.ColourSpread,
+                             colour => (colour.Colour == "Green") || (colour.Colour == "green"));
+            if (opts.IsRed)
+                filter = filter &
+                         Builders<DeckModel>.Filter.ElemMatch(deck => deck.ColourSpread,
+                             colour => (colour.Colour == "Red") || (colour.Colour == "red"));
+            if (opts.IsWhite)
+                filter = filter &
+                         Builders<DeckModel>.Filter.ElemMatch(deck => deck.ColourSpread,
+                             colour => (colour.Colour == "White") || (colour.Colour == "white"));
+
+            //perform the search
+            var result = DecksCollection.FindAsync(filter);
+
+            Task.WaitAny(result);
+
+            //error handling
+            if (result.IsFaulted || result.IsCanceled)
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+
+            //return the decks
+            return result.Result.ToList();
         }
     }
 }

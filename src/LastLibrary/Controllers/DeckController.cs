@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using LastLibrary.Helpers;
 using LastLibrary.Models;
+using LastLibrary.Models.BrowseModels;
 using LastLibrary.Models.DeckManagerViewModel;
 using LastLibrary.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,8 +19,6 @@ namespace LastLibrary.Controllers
     public class DeckController : Controller
     {
         private readonly UserManager<ApplicationUser> UserManager;
-        private INoSqlService NoSqlService { get; }
-        private DeckBuilderHelper DeckBuilderHelper { get; }
 
         public DeckController(UserManager<ApplicationUser> userManager, INoSqlService noSqlService)
         {
@@ -30,24 +27,24 @@ namespace LastLibrary.Controllers
             DeckBuilderHelper = new DeckBuilderHelper();
         }
 
+        private INoSqlService NoSqlService { get; }
+        private DeckBuilderHelper DeckBuilderHelper { get; }
+
         /**
          * Route used to save a new deckModel
          */
+
         [HttpPost]
         [Route("api/Deck")]
         public HttpStatusCode Post([FromBody] DeckModel deckModel)
         {
             //if the request has an invalid body
             if (!ModelState.IsValid)
-            {
                 throw new HttpResponseException(HttpStatusCode.BadRequest);
-            }
 
             //make sure the user is logged in
             if (!User.Identity.IsAuthenticated)
-            {
                 throw new HttpResponseException(HttpStatusCode.Forbidden);
-            }
 
             //otherwise, grab the current logged in user
             var getUserTask = UserManager.GetUserAsync(HttpContext.User);
@@ -66,13 +63,11 @@ namespace LastLibrary.Controllers
             deckModel.CreationDate = DateTime.Now;
 
             //write the deck out to firebase
-            var response =  NoSqlService.WriteDeck(deckModel);
-            
+            var response = NoSqlService.WriteDeck(deckModel);
+
             //this is hackey, but if there is an error, throw an exception
             if (response != HttpStatusCode.OK)
-            {
                 throw new HttpResponseException(response);
-            }
 
             return response;
         }
@@ -80,21 +75,18 @@ namespace LastLibrary.Controllers
         /**
          * Route used to update a deck
          */
+
         [HttpPut]
         [Route("api/Deck/{id}")]
         public HttpStatusCode Put(string id, [FromBody] DeckModel deckModel)
-        {            
+        {
             //if the request has an invalid body
             if (!ModelState.IsValid)
-            {
                 throw new HttpResponseException(HttpStatusCode.BadRequest);
-            }
 
             //make sure the user is logged in
             if (!User.Identity.IsAuthenticated)
-            {
                 throw new HttpResponseException(HttpStatusCode.Forbidden);
-            }
 
             //get the user        
             var getUserTask = UserManager.GetUserAsync(HttpContext.User);
@@ -116,9 +108,7 @@ namespace LastLibrary.Controllers
 
             //make sure the deck belongs to the current user
             if (string.Compare(deck.Creator, user.UserName, StringComparison.CurrentCulture) != 0)
-            {
                 throw new HttpResponseException(HttpStatusCode.Forbidden);
-            }
 
             //set the Creator to the current user
             deckModel.Creator = user.UserName;
@@ -154,13 +144,11 @@ namespace LastLibrary.Controllers
         {
             //make sure the user is logged in
             if (!User.Identity.IsAuthenticated)
-            {
                 throw new HttpRequestException("No user logged in");
-            }
 
             //get the user's data
             var user = await UserManager.GetUserAsync(HttpContext.User);
-            
+
             //get the decks from mongoDb
             return NoSqlService.GetDecksForUser(user.UserName);
         }
@@ -178,21 +166,21 @@ namespace LastLibrary.Controllers
         public ICollection<DeckModel> GetDecksByUserNameAndDeckName(string userName, string deckName)
         {
             //get the decks from mongoDb
-            return NoSqlService.GetDecksByUserNameAndDeckName(Uri.UnescapeDataString(userName), Uri.UnescapeDataString(deckName));
+            return NoSqlService.GetDecksByUserNameAndDeckName(Uri.UnescapeDataString(userName),
+                Uri.UnescapeDataString(deckName));
         }
 
         /**
          * Route to delete a deck by ID
          */
+
         [HttpDelete]
         [Route("api/Deck/{id}")]
         public HttpStatusCode DeleteDeckById(string id)
-        {            
+        {
             //make sure the user is logged in
             if (!User.Identity.IsAuthenticated)
-            {
                 throw new HttpResponseException(HttpStatusCode.Forbidden);
-            }
 
             //get the user        
             var getUserTask = UserManager.GetUserAsync(HttpContext.User);
@@ -214,9 +202,7 @@ namespace LastLibrary.Controllers
 
             //make sure that the deck belongs to the user
             if (string.Compare(user.UserName, deck.Creator, StringComparison.CurrentCulture) != 0)
-            {
                 throw new HttpResponseException(HttpStatusCode.Forbidden);
-            }
 
             //delete the deck
             return NoSqlService.DeleteDeck(id);
@@ -228,9 +214,7 @@ namespace LastLibrary.Controllers
         {
             //make sure the user is logged in to comment
             if (!User.Identity.IsAuthenticated)
-            {
                 throw new HttpResponseException(HttpStatusCode.Forbidden);
-            }
 
             //get the deck to delete
             DeckModel deck;
@@ -248,20 +232,18 @@ namespace LastLibrary.Controllers
 
             Task.WaitAny(getUserTask);
 
-            var user = getUserTask.Result;           
-             
+            var user = getUserTask.Result;
+
             //make sure the deck is public, you can only comment on public decks if you don't own them
-            if (!deck.IsPublic && string.Compare(deck.Creator, user.UserName, StringComparison.CurrentCulture) != 0)
-            {
+            if (!deck.IsPublic && (string.Compare(deck.Creator, user.UserName, StringComparison.CurrentCulture) != 0))
                 throw new HttpResponseException(HttpStatusCode.Forbidden);
-            }
 
             //add the username to the comment data
             comment.Commenter = user.UserName;
 
             //add the current date to the comment
             comment.CommentDate = DateTime.Now;
-            
+
             //save the comment
             HttpStatusCode result;
             try
@@ -283,15 +265,11 @@ namespace LastLibrary.Controllers
         {
             //if the request has an invalid body
             if (!ModelState.IsValid)
-            {
                 throw new HttpResponseException(HttpStatusCode.BadRequest);
-            }
 
             //make sure the user is logged in
             if (!User.Identity.IsAuthenticated)
-            {
                 throw new HttpResponseException(HttpStatusCode.Forbidden);
-            }
 
             //get the user        
             var getUserTask = UserManager.GetUserAsync(HttpContext.User);
@@ -312,10 +290,8 @@ namespace LastLibrary.Controllers
             }
 
             //make sure the deck is public, and make sure that if the deck is public, the deck doesn't belong to the user
-            if (!deck.IsPublic || string.Compare(deck.Creator, user.UserName, StringComparison.CurrentCulture) == 0)
-            {
+            if (!deck.IsPublic || (string.Compare(deck.Creator, user.UserName, StringComparison.CurrentCulture) == 0))
                 throw new HttpResponseException(HttpStatusCode.Forbidden);
-            }
 
             //set the username to the rating object
             rating.UserName = user.UserName;
@@ -352,5 +328,45 @@ namespace LastLibrary.Controllers
             return decks;
         }
 
+        [HttpPost]
+        [Route("api/Deck/Search")]
+        public ICollection<BrowseViewModel> GetDecksByAdvancedSearch([FromBody] DeckSearchOptionsModel opts)
+        {
+            //if the request has an invalid body
+            if (!ModelState.IsValid)
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+
+            //pass the options to the NoSql service
+            ICollection<DeckModel> results;
+            try
+            {
+                results = NoSqlService.GetDecksByAdvancedSearch(opts);
+            }
+            catch (HttpResponseException e)
+            {
+                throw e;
+            }
+
+            //create the return element
+            ICollection<BrowseViewModel> searchResults = new Collection<BrowseViewModel>();
+
+            //check to make sure we got something
+            if (results == null || results.Count == 0)
+            {
+                return searchResults;
+            }
+
+            //if we did, populate the search results
+            foreach (var deck in results)
+            {
+                searchResults.Add(new BrowseViewModel
+                {
+                    Deck = deck,
+                    Url = "/Browse/Deck/" + deck.Id.ToString()
+                });
+            }
+            //return the results
+            return searchResults;
+        }
     }
 }
