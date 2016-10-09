@@ -20,7 +20,6 @@ namespace LastLibrary.Models.DeckManagerViewModel
         public string Description { get; set; }
         public string Creator { get; set; }
         public bool IsPublic { get; set; }
-        public float? Rating { get; set; }
         public DateTime CreationDate { get; set; }
         public ICollection<ColourSpread> ColourSpread { get; set; }
 
@@ -29,6 +28,9 @@ namespace LastLibrary.Models.DeckManagerViewModel
 
         [BsonIgnoreIfDefault]
         public Collection<CommentData> Comments { get; set; }
+
+        [BsonIgnoreIfDefault]
+        public Collection<RatingData> Ratings { get; set; }
     }
 
     public class ColourSpread
@@ -48,5 +50,13 @@ namespace LastLibrary.Models.DeckManagerViewModel
         public string Comment { get; set; }
         public DateTime CommentDate { get; set; }
         public string Commenter { get; set; }
+    }
+
+    public class RatingData
+    {
+        [Required]
+        [Range(0, 5)]
+        public int? Rating { get; set; }
+        public string UserName { get; set; }
     }
 }
