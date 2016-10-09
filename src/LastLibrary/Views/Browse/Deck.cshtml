@@ -44,23 +44,26 @@
         <p>
             Creator: @Model.Deck.Creator
         </p>
-        <p>
-            @if (!Model.Deck.IsPublic)
+
+        @if (!Model.Deck.IsPublic)
+        {
+            <p>
+                Private Deck
+            </p>
+        }
+        else
+        {
+            if ((Model.Deck.Ratings == null) || (Model.Deck.Ratings.Count == 0))
             {
-                <text>
-                    Private Deck
-                </text>
+                <p>Not Yet Rated</p>
+                <p>Times Rated: 0</p>
             }
             else
             {
-                <text>
-                    Not Yet Rated
-                </text>
+                <p>Rating: @Model.Deck.Ratings.Select(e => e.Rating).Average()/5</p>
+                <p>Times Rated: @Model.Deck.Ratings.Count</p>
             }
-        </p>
-        <p>
-            Times Rated: 0
-        </p>
+        }
         <p>
             Posted: @Model.Deck.CreationDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
         </p>
@@ -85,6 +88,23 @@
             </div>
         </div>
     }
+    else
+    {
+        <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--justify-flex-end">
+            <label id="ratingLabel">Rating</label>
+            <select id="ratingSelect">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5" selected>5</option>
+            </select>
+            <div class="submitButton">
+                <button id="rateButton" class="btn btn-default customButton" onclick="rateDeck(event, '@Model.Deck.Id.ToString()')">Rate Deck</button>
+            </div>
+        </div>
+    }
     <div class="margin-top-Medium lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around lastLibrary-flex--wrap">
         @foreach (var card in Model.Deck.Cards)
         {
@@ -94,7 +114,7 @@
 
     <div>
         <div class="lastLibrary-flex lastLibrary-flex--column">
-            @if (Model.Deck.Comments != null && Model.Deck.Comments.Count > 0)
+            @if ((Model.Deck.Comments != null) && (Model.Deck.Comments.Count > 0))
             {
                 foreach (var comment in Model.Deck.Comments)
                 {
@@ -112,28 +132,27 @@
                         </p>
                     </div>
                 }
-
             }
         </div>
-    @if (SignInManager.IsSignedIn(User))
-    {
-        <form class="addCommentGroup">
-            <div class="form-group">
-                <label for="addComment" id="cardNameLabel">Comment</label>
-                <textarea rows="4" name="addComment" id="addComment" class="input-comment padding-small" placeholder="Write a comment..."></textarea>
-            </div>
-        </form>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <form class="addCommentGroup">
+                <div class="form-group">
+                    <label for="addComment" id="cardNameLabel">Comment</label>
+                    <textarea rows="4" name="addComment" id="addComment" class="input-comment padding-small" placeholder="Write a comment..."></textarea>
+                </div>
+            </form>
 
-        <div class="submitButton">
-            <button id="commentSaveButton" class="btn btn-default customButton" onclick="saveComment('@Model.Deck.Id.ToString()')">Write Comment</button>
-        </div>
-    }
+            <div class="submitButton">
+                <button id="commentSaveButton" class="btn btn-default customButton" onclick="saveComment('@Model.Deck.Id.ToString()')">Write Comment</button>
+            </div>
+        }
     </div>
 </div>
 
 @section scripts{
     <script type="text/javascript">
-        
+
         /**
          * Function that initiated and handles a call to the back-end to save the user's comment
          */
@@ -155,11 +174,11 @@
                 url: "/api/Deck/Comment/" + deckId,
                 contentType: 'application/json',
                 data: JSON.stringify(requestContent),
-                success: function () {
+                success: function() {
                     $("#addComment").val("");
                     location.reload();
                 },
-                error: function () {
+                error: function() {
                     console.error("Unable to save deck");
                 }
             });
@@ -189,6 +208,41 @@
                 },
                 error: function() {
                     console.error("Unable to delete deck");
+                }
+            });
+            return true;
+        }
+
+        /**
+         * Function that, when called, will send of an ajax call to the server to rate the
+         * current deck by ID
+         *
+         * @@param {string} deckId - The id of the deck to delete
+         */
+        function rateDeck(e, deckId) {
+
+            e.preventDefault();
+
+            //make sure we got a deck ID to send to the server
+            if (deckId === undefined || deckId === null) return false;
+
+            //create the object to send to the server
+            var requestContent = {
+                rating: $("#ratingSelect").val()
+            };
+
+            //otherwise, make a call to the server to delete the deck
+            $.ajax({
+                type: "POST",
+                url: "/api/Deck/Rate/" + deckId,
+                contentType: 'application/json',
+                data: JSON.stringify(requestContent),
+                success: function() {
+                    //refresh the page to get the new data from the server
+                    location.reload();
+                },
+                error: function() {
+                    console.error("Unable to rate deck");
                 }
             });
             return true;

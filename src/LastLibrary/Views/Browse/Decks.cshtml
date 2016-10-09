@@ -39,9 +39,13 @@
                                         @{
                                             if (deckData.deck.IsPublic)
                                             {
-                                                if (deckData.deck.Rating == null)
+                                                if (deckData.deck.Ratings == null || deckData.deck.Ratings.Count == 0)
                                                 {
                                                     <p>Not Yet Rated</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>Rating: @deckData.deck.Ratings.Select(e => e.Rating).Average()/5</p>
                                                 }
                                             }
                                             else

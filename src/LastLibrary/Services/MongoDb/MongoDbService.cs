@@ -44,7 +44,7 @@ namespace LastLibrary.Services.MongoDb
 
             Task.WaitAny(result);
 
-            return (result.IsFaulted) || (result.IsFaulted)
+            return (result.IsFaulted) || (result.IsCanceled)
                 ? HttpStatusCode.InternalServerError
                 : HttpStatusCode.OK;
         }
@@ -122,7 +122,7 @@ namespace LastLibrary.Services.MongoDb
             Task.WaitAny(result);
 
             //error handling
-            if ((result.IsFaulted) || (result.IsFaulted))
+            if (result.IsFaulted || result.IsCanceled)
             {
                 throw new HttpResponseException(HttpStatusCode.InternalServerError);
             }
@@ -138,7 +138,7 @@ namespace LastLibrary.Services.MongoDb
 
             Task.WaitAny(result);
 
-            return (result.IsFaulted) || (result.IsFaulted)
+            return (result.IsFaulted || result.IsCanceled)
                 ? HttpStatusCode.InternalServerError
                 : HttpStatusCode.OK;
         }
@@ -162,7 +162,7 @@ namespace LastLibrary.Services.MongoDb
             Task.WaitAny(result);
 
             //error handling
-            if ((result.IsFaulted) || (result.IsFaulted))
+            if (result.IsFaulted || result.IsCanceled)
             {
                 throw new HttpResponseException(HttpStatusCode.InternalServerError);
             }
@@ -187,9 +187,56 @@ namespace LastLibrary.Services.MongoDb
             Task.WaitAny(result);
 
             //error handling
-            if ((result.IsFaulted) || (result.IsFaulted))
+            if (result.IsFaulted || result.IsCanceled)
             {
                 throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+            return HttpStatusCode.OK;
+        }
+
+        public HttpStatusCode RateDeckGetDeckById(string deckId, RatingData rating)
+        {
+            //get the id model for the deck
+            FilterDefinition<DeckModel> idFilter;
+            try
+            {
+                idFilter = Builders<DeckModel>.Filter.Eq("_id", ObjectId.Parse(deckId));
+            }
+            catch
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
+            var ratingFilter = Builders<DeckModel>.Filter.ElemMatch(deck => deck.Ratings, deckRating => deckRating.UserName == rating.UserName);
+            var idAndRatingFilter = Builders<DeckModel>.Filter.And(idFilter, ratingFilter);
+
+            //create the updator
+            var ratingSetter = Builders<DeckModel>.Update.Set("Ratings.$", rating);
+            //update the user's rating, or create it if they don't exist
+            var result = DecksCollection.UpdateOneAsync(idAndRatingFilter, ratingSetter);
+
+            Task.WaitAny(result);
+
+            //error handling
+            if (result.IsFaulted || result.IsCanceled)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+            //check to see if anything was modified
+            if (result.Result.ModifiedCount == 0)
+            {
+                //if nothing was modified, push a new element to the ratings array
+                var ratingsPusher = Builders<DeckModel>.Update.Push(e => e.Ratings, rating);
+                result = DecksCollection.UpdateOneAsync(idFilter, ratingsPusher);
+
+                Task.WaitAny(result);
+
+                //error handling
+                if (result.IsFaulted || result.IsCanceled)
+                {
+                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                }
             }
 
             return HttpStatusCode.OK;

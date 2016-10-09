@@ -132,6 +132,9 @@ namespace LastLibrary.Controllers
             //copy the comments over
             deckModel.Comments = deck.Comments;
 
+            //copy the ratings over
+            deckModel.Ratings = deck.Ratings;
+
             //update the deck with the new data
             HttpStatusCode statusCode;
             try
@@ -274,5 +277,61 @@ namespace LastLibrary.Controllers
         }
 
 
+        [HttpPost]
+        [Route("api/Deck/Rate/{deckId}")]
+        public HttpStatusCode AddRatingToDeck(string deckId, [FromBody] RatingData rating)
+        {
+            //if the request has an invalid body
+            if (!ModelState.IsValid)
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
+
+            //make sure the user is logged in
+            if (!User.Identity.IsAuthenticated)
+            {
+                throw new HttpResponseException(HttpStatusCode.Forbidden);
+            }
+
+            //get the user        
+            var getUserTask = UserManager.GetUserAsync(HttpContext.User);
+
+            Task.WaitAny(getUserTask);
+
+            var user = getUserTask.Result;
+
+            //get the deck to rate
+            DeckModel deck;
+            try
+            {
+                deck = NoSqlService.GetDeckById(deckId);
+            }
+            catch (HttpResponseException e)
+            {
+                throw e;
+            }
+
+            //make sure the deck is public, and make sure that if the deck is public, the deck doesn't belong to the user
+            if (!deck.IsPublic || string.Compare(deck.Creator, user.UserName, StringComparison.CurrentCulture) == 0)
+            {
+                throw new HttpResponseException(HttpStatusCode.Forbidden);
+            }
+
+            //set the username to the rating object
+            rating.UserName = user.UserName;
+
+            //since the user is allowed to, let them rate the deck,
+            HttpStatusCode result;
+            try
+            {
+                result = NoSqlService.RateDeckGetDeckById(deckId, rating);
+            }
+            catch (HttpResponseException e)
+            {
+                throw e;
+            }
+
+            return result;
+        }
     }
 }
