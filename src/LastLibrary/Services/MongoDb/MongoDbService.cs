@@ -246,6 +246,7 @@ namespace LastLibrary.Services.MongoDb
             //now, get the average ratings of the decks
             var averageSortedDecks =
                 result.Result.OrderByDescending(e => e.Ratings.Select(r => r.Rating == null ? 0 : r.Rating).Average())
+                    .ThenByDescending(x => x.Ratings.Count)
                     .Take(amount)
                     .ToList();
 
