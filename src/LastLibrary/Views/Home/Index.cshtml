@@ -48,7 +48,9 @@
                                     }
                                 }
                             }
-                            <p>@deck.DeckName</p>
+                            <a asp-area="" asp-controller="Browse" asp-action="Deck" asp-route-id="@deck.Id" class="padding-left-small">
+                                @deck.DeckName
+                            </a>
                         </div>
 
                         <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between">
@@ -70,5 +72,75 @@
 
     <div class="col-md-12">
         <h1-custom>Newest Decks</h1-custom>
+        <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around">
+            @if ((Model.NewestDecks == null) || (Model.NewestDecks.Count == 0))
+            {
+                <p>
+                    There don't seem to be any decks right now. Use the
+                    <a asp-area="" asp-controller="DeckManager" asp-action="Index" class="navbar-brand"> Deck builder</a>
+                    and start making decks!
+                </p>
+            }
+            else
+            {
+                foreach (var deck in Model.NewestDecks)
+                {
+                    <div class="lastLibrary-flex lastLibrary-flex--column">
+                        <div class="lastLibrary-flex lastLibrary-flex--row">
+                            @{
+                                var orderedColourSpread = deck.ColourSpread.OrderByDescending(el => el.Percentage).ToList();
+                                foreach (var colour in orderedColourSpread)
+                                {
+                                    if (string.Compare(colour.Colour, "red", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                    {
+                                        <span class="mana xsmall sr"></span>
+                                    }
+                                    else if (string.Compare(colour.Colour, "blue", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                    {
+                                        <span class="mana xsmall su"></span>
+                                    }
+                                    else if (string.Compare(colour.Colour, "black", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                    {
+                                        <span class="mana xsmall sb"></span>
+                                    }
+                                    else if (string.Compare(colour.Colour, "green", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                    {
+                                        <span class="mana xsmall sg"></span>
+                                    }
+                                    else if (string.Compare(colour.Colour, "white", StringComparison.CurrentCultureIgnoreCase) == 0)
+                                    {
+                                        <span class="mana xsmall sw"></span>
+                                    }
+                                }
+                            }
+                            <a asp-area="" asp-controller="Browse" asp-action="Deck" asp-route-id="@deck.Id" class="padding-left-small">
+                                @deck.DeckName
+                            </a>
+                        </div>
+
+                        <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between">
+                            <img src="@deck.Cards.OrderBy(x => Guid.NewGuid()).FirstOrDefault().Card.ImageUrl" alt="@deck.DeckName Image"/>
+                            <div class="lastLibrary-flex lastLibrary-flex--column lastLibrary-flex--justify-space-between">
+                                <p>
+                                    <em>@deck.Description</em>
+                                </p>
+                                <p>@deck.Creator</p>
+                                @{
+                                    if ((deck.Ratings == null) || (deck.Ratings.Count == 0))
+                                    {
+                                        <p>Not Yet Rated</p>
+                                    }
+                                    else
+                                    {
+                                        <p>Avg rating @deck.Ratings.Select(e => e.Rating).Average()/5</p>
+                                        <p>@deck.Ratings.Count Ratings</p>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
     </div>
 </div>

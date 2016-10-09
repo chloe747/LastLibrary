@@ -22,7 +22,9 @@ namespace LastLibrary.Controllers
             //grab the top rated decks
             var homeModel = new HomeViewModel()
             {
-                TopRatedDecks = NoSqlService.GetDecksByTopRated(5)
+                TopRatedDecks = NoSqlService.GetDecksByTopRated(5),
+                NewestDecks = NoSqlService.GetDecksByNewest(5)
+
             };
             return View(homeModel);
         }
