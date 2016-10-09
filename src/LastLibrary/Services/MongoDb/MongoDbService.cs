@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -8,6 +10,7 @@ using LastLibrary.Models.ConfigurationModels;
 using LastLibrary.Models.DeckManagerViewModel;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 
@@ -240,6 +243,25 @@ namespace LastLibrary.Services.MongoDb
             }
 
             return HttpStatusCode.OK;
+        }
+
+        public ICollection<DeckModel> GetDecksByTopRated(int amount)
+        {
+            //get all decks by is public
+            var result = DecksCollection.Find(deck => deck.IsPublic && deck.Ratings != null).ToListAsync();
+
+            Task.WaitAny(result);
+
+            //error handling
+            if (result.IsFaulted || result.IsCanceled)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+            //now, get the average ratings of the decks
+            var averageSortedDecks = result.Result.OrderByDescending(e => e.Ratings.Select(r => r.Rating == null ? 0 : r.Rating).Average()).Take(amount).ToList();
+
+            return averageSortedDecks;
         }
     }
 }

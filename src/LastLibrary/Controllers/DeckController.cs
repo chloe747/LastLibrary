@@ -333,5 +333,24 @@ namespace LastLibrary.Controllers
 
             return result;
         }
+
+        [HttpGet]
+        [Route("api/Deck/TopRated/{amount}")]
+        public ICollection<DeckModel> GetTopRatedDecks(int amount)
+        {
+            //get the decks from the mongo db
+            ICollection<DeckModel> decks;
+            try
+            {
+                decks = NoSqlService.GetDecksByTopRated(amount);
+            }
+            catch (HttpResponseException e)
+            {
+                throw e;
+            }
+
+            return decks;
+        }
+
     }
 }
