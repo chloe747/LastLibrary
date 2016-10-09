@@ -273,7 +273,7 @@
             } else {
                 var ratingScore = 0.0;
                 deckData.deck.ratings.forEach(function(rating) {
-                    ratingScore += rating;
+                    ratingScore += parseFloat(rating.rating).toFixed(1);
                 });
 
                 ratingText = "Ave rating " + (ratingScore / deckData.deck.ratings.length) + "/5";
