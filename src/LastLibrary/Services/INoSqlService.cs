@@ -19,5 +19,7 @@ namespace LastLibrary.Services
         HttpStatusCode UpdateDeckById(string deckId, DeckModel replacementDeck);
         HttpStatusCode AddCommentToDeck(CommentData comment, string deckId);
         HttpStatusCode RateDeckGetDeckById(string deckId, RatingData rating);
+        ICollection<DeckModel> GetDecksByTopRated(int amount);
+        ICollection<DeckModel> GetDecksByNewest(int amount);
     }
 }
