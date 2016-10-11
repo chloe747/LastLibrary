@@ -7,7 +7,7 @@
 <div class="lastLibrary-flex lastLibrary-flex--column">
     <div class="col-md-12">
         <h1-custom>Top Rated Decks</h1-custom>
-        <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around">
+        <div class="deckContainer">
             @if ((Model.TopRatedDecks == null) || (Model.TopRatedDecks.Count == 0))
             {
                 <p>
@@ -20,8 +20,14 @@
             {
                 foreach (var deck in Model.TopRatedDecks)
                 {
-                    <div class="lastLibrary-flex lastLibrary-flex--column">
-                        <div class="lastLibrary-flex lastLibrary-flex--row">
+                    <div class="deck">
+                        <div class="deckTitle">
+                            <a asp-area="" asp-controller="Browse" asp-action="Deck" asp-route-id="@deck.Id" class="padding-left-small">
+                                @deck.DeckName
+                            </a>
+                        </div>
+                       
+                        <div class="deckColors">
                             @{
                                 var orderedColourSpread = deck.ColourSpread.OrderByDescending(el => el.Percentage).ToList();
                                 foreach (var colour in orderedColourSpread)
@@ -48,20 +54,25 @@
                                     }
                                 }
                             }
-                            <a asp-area="" asp-controller="Browse" asp-action="Deck" asp-route-id="@deck.Id" class="padding-left-small">
-                                @deck.DeckName
-                            </a>
                         </div>
+                        <div class="deckUsername">By @deck.Creator </div>
 
-                        <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between">
-                            <img src="@deck.Cards.OrderBy(x => Guid.NewGuid()).FirstOrDefault().Card.ImageUrl" alt="@deck.DeckName Image"/>
-                            <div class="lastLibrary-flex lastLibrary-flex--column lastLibrary-flex--justify-space-between">
-                                <p>
-                                    <em>@deck.Description</em>
+                        <div class="deckCardData">
+                            <img src="@deck.Cards.OrderBy(x => Guid.NewGuid()).FirstOrDefault().Card.ImageUrl" alt="@deck.DeckName" class="deckImage"/>
+                            <div class="deckInfo">
+                                <p class="deckDescription ">
+                                    @deck.Description
                                 </p>
-                                <p>@deck.Creator</p>
-                                <p>Avg rating @deck.Ratings.Select(e => e.Rating).Average()/5</p>
-                                <p>@deck.Ratings.Count Ratings</p>
+                                @{
+                                    var averageRating = deck.Ratings.Select(e => e.Rating).Average();
+                                    var imagePath = "images/" + @averageRating + ".png";
+                                    <div class="deckRating">
+                                        <img src="@imagePath" alt="@averageRating" class="ratingImage"/><br/>
+                                        Avg. Rating @averageRating/5<br/>
+                                        @deck.Ratings.Count Ratings
+                                    </div>
+                                }
+                                
                             </div>
                         </div>
                     </div>
@@ -72,7 +83,7 @@
 
     <div class="col-md-12">
         <h1-custom>Newest Decks</h1-custom>
-        <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around">
+        <div class="deckContainer">
             @if ((Model.NewestDecks == null) || (Model.NewestDecks.Count == 0))
             {
                 <p>
@@ -85,8 +96,13 @@
             {
                 foreach (var deck in Model.NewestDecks)
                 {
-                    <div class="lastLibrary-flex lastLibrary-flex--column">
-                        <div class="lastLibrary-flex lastLibrary-flex--row">
+                    <div class="deck">
+                        <div class="deckTitle">
+                            <a asp-area="" asp-controller="Browse" asp-action="Deck" asp-route-id="@deck.Id" class="padding-left-small">
+                                @deck.DeckName
+                            </a>
+                        </div>
+                        <div class="deckColors">
                             @{
                                 var orderedColourSpread = deck.ColourSpread.OrderByDescending(el => el.Percentage).ToList();
                                 foreach (var colour in orderedColourSpread)
@@ -113,34 +129,38 @@
                                     }
                                 }
                             }
-                            <a asp-area="" asp-controller="Browse" asp-action="Deck" asp-route-id="@deck.Id" class="padding-left-small">
-                                @deck.DeckName
-                            </a>
-                        </div>
 
-                        <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between">
-                            <img src="@deck.Cards.OrderBy(x => Guid.NewGuid()).FirstOrDefault().Card.ImageUrl" alt="@deck.DeckName Image"/>
-                            <div class="lastLibrary-flex lastLibrary-flex--column lastLibrary-flex--justify-space-between">
-                                <p>
-                                    <em>@deck.Description</em>
-                                </p>
-                                <p>@deck.Creator</p>
-                                @{
-                                    if ((deck.Ratings == null) || (deck.Ratings.Count == 0))
-                                    {
-                                        <p>Not Yet Rated</p>
+                        </div>
+                        <div class="deckUsername">By @deck.Creator </div>
+
+                            <div class="deckCardData">
+                                <img src="@deck.Cards.OrderBy(x => Guid.NewGuid()).FirstOrDefault().Card.ImageUrl" alt="@deck.DeckName Image" class="deckImage"/>
+                                <div class="deckInfo">
+                                    <div class="deckDescription ">
+                                        @deck.Description
+                                    </div>
+     
+                                    @{
+                                        if ((deck.Ratings == null) || (deck.Ratings.Count == 0))
+                                        {
+                                            <p>Not Yet Rated</p>
+                                        }
+                                        else
+                                        {
+                                            var averageRating = deck.Ratings.Select(e => e.Rating).Average();
+                                            var imagePath = "images/" + @averageRating + ".png";
+                                            <div class="deckRating">
+                                                <img src="@imagePath" alt="@averageRating" class="ratingImage" /><br />
+                                                Avg. Rating @averageRating/5<br />
+                                                @deck.Ratings.Count Ratings
+                                            </div>
+                                        }
                                     }
-                                    else
-                                    {
-                                        <p>Avg rating @deck.Ratings.Select(e => e.Rating).Average()/5</p>
-                                        <p>@deck.Ratings.Count Ratings</p>
-                                    }
-                                }
+                                </div>
                             </div>
                         </div>
-                    </div>
-                }
-            }
+                                        }
+                                    }
         </div>
     </div>
 </div>
