@@ -276,7 +276,7 @@
                     ratingScore += parseFloat(rating.rating).toFixed(1);
                 });
 
-                ratingText = "Ave rating " + (ratingScore / deckData.deck.ratings.length) + "/5";
+                ratingText = "Ave rating " + Math.round(ratingScore / deckData.deck.ratings.length) + "/5";
                 $("<p />",
                     {
                         "text": ratingText

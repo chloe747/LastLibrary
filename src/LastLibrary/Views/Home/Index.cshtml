@@ -64,7 +64,8 @@
                                     @deck.Description
                                 </p>
                                 @{
-                                    var averageRating = deck.Ratings.Select(e => e.Rating).Average();
+                                    var averageDouble = deck.Ratings.Select(e => e.Rating).Average();
+                                    var averageRating = Math.Round(Convert.ToDecimal(averageDouble));
                                     var imagePath = "images/" + @averageRating + ".png";
                                     <div class="deckRating">
                                         <img src="@imagePath" alt="@averageRating" class="ratingImage"/><br/>
@@ -147,7 +148,8 @@
                                         }
                                         else
                                         {
-                                            var averageRating = deck.Ratings.Select(e => e.Rating).Average();
+                                            var averageDouble = deck.Ratings.Select(e => e.Rating).Average();
+                                            var averageRating = Math.Round(Convert.ToDecimal(averageDouble));
                                             var imagePath = "images/" + @averageRating + ".png";
                                             <div class="deckRating">
                                                 <img src="@imagePath" alt="@averageRating" class="ratingImage" /><br />

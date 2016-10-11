@@ -45,7 +45,9 @@
                                                 }
                                                 else
                                                 {
-                                                    <p>Rating: @deckData.deck.Ratings.Select(e => e.Rating).Average()/5</p>
+                                                    var ratingDouble = deckData.deck.Ratings.Select(e => e.Rating).Average();
+                                                    var ratingAverage = Math.Round(Convert.ToDecimal(ratingDouble));
+                                                    <p>Rating: @ratingAverage/5</p>
                                                 }
                                             }
                                             else
