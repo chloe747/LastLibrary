@@ -187,6 +187,41 @@ h1-custom:after {
     background-color: #555555;
 }
 
+/* ----------------------my deck page------------------------------ */
+.deckDropDown {
+    width: 30px;
+    height: 30px;
+}
+
+.dropdownImage {
+    width: 30px;
+    height: 30px;
+}
+.deckHeader {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.deckControls {
+     margin-bottom: 20px;
+}
+.deckList {
+    margin-bottom: 30px;
+}
+.cardSmall {
+    width: 180px;
+    height: 250px;
+    margin: 10px;
+}
+#sampleHandArea {
+    width: 100%;
+    display: flex;
+     justify-content: space-around;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
 /* ----------------------deckModel building page------------------------------ */
 
 .search-icon {
@@ -403,7 +438,6 @@ select {
   flex-wrap: wrap;
 }
 
-
 /* ---------------- Single deck page ---------------- */
 .deckTopLine {
     font-size: 70%;
@@ -474,15 +508,19 @@ select {
 .commentSection {
     margin: 20px;
 }
-/* -- placeholder, should be deleted when done -- */
-.placeholder-square--purple {
-    background-color: purple;
-    height: 30px;
-    width: 30px;
+
+/* ---------------- logins---------------- */
+.logOut {
+    width: 40%;
 }
 
-.placeholder-square--pink {
-    background-color: hotpink;
-    height: 30px;
-    width: 30px;
+.navLinks {
+    display: flex;
+    flex-direction: row;
+    width: 30%;
+}
+
+
+.navLinks li {
+    min-width: 130px;
 }
