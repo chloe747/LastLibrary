@@ -28,9 +28,11 @@
                                 oddCollectionElement = "lastLibrary--list-odd";
                             }
                             <div class="lastLibrary-flex lastLibrary-flex--column @oddCollectionElement">
-                                <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--justify-space-between">
+                                <div class="deckHeader">
                                     <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-center">
-                                        <div class="placeholder-square--purple"></div>
+                                        <div class="deckDropDown">
+                                            <img src="../../images/chevron-right.png" alt=">" class="dropdownImage" id="dropdownImage"/>
+                                        </div>
                                     <a asp-area="" asp-controller="Browse" asp-action="Deck" asp-route-id="@deckData.deck.Id" class="padding-left-small">
                                         @deckData.deck.DeckName
                                     </a>
@@ -87,7 +89,7 @@
                                 </div>
 
                                 <div class="lastLibrary-100-width lastLibrary-hidden lastLibrary-toggleable lastLibrary-flex--column">
-                                    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around">
+                                    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around deckControls">
                                         <a href="#" onclick="displaySampleHand(event, @JsonConvert.SerializeObject(deckData.deck.Id))">
                                             Draw Hand
                                         </a>
@@ -98,7 +100,7 @@
                                             Delete
                                         </a>
                                     </div>
-                                    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex lastLibrary-flex--column">
+                                    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex lastLibrary-flex--column deckList">
                                         @{
                                             foreach (var card in deckData.deck.Cards)
                                             {
@@ -137,7 +139,7 @@
             $.each(decks,
                 function(deckKey, deckElement) {
                     //get the expand/collapse button in the deck
-                    var button = $(deckElement).find(".placeholder-square--purple");
+                    var button = $(deckElement).find(".deckDropDown");
                     //get the toggleble portion of the deck
                     var toggleableContent = $(deckElement).find(".lastLibrary-toggleable");
 
@@ -146,9 +148,12 @@
                         function() {
                             if ($(toggleableContent).css('display') === 'none') {
                                 $(toggleableContent).css('display', 'flex');
+                                document.getElementById("dropdownImage").src = "../../images/chevron-down.png";
                             } else {
                                 $(toggleableContent).css('display', 'none');
+                                document.getElementById("dropdownImage").src = "../../images/chevron-right.png";
                             }
+                           
                         });
                 });
 
@@ -215,7 +220,7 @@
                     {
                         src: element,
                         alt: "sample-card-" + index,
-                        "class": "card"
+                        "class": "cardSmall"
                     })
                     .appendTo(sampleHandArea);
             });
