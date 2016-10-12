@@ -438,7 +438,6 @@ select {
   flex-wrap: wrap;
 }
 
-
 /* ---------------- Single deck page ---------------- */
 .deckTopLine {
     font-size: 70%;
@@ -509,14 +508,19 @@ select {
 .commentSection {
     margin: 20px;
 }
-/* -- placeholder, should be deleted when done -- */
-.placeholder-square--purple {
-    height: 30px;
-    width: 30px;
+
+/* ---------------- logins---------------- */
+.logOut {
+    width: 40%;
 }
 
-.placeholder-square--pink {
-    background-color: hotpink;
-    height: 30px;
-    width: 30px;
+.navLinks {
+    display: flex;
+    flex-direction: row;
+    width: 30%;
+}
+
+
+.navLinks li {
+    min-width: 130px;
 }
