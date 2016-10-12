@@ -168,13 +168,19 @@
             //create the container
             var containingDiv = $("<div />",
             {
-                "class": "lastLibrary-flex lastLibrary-flex--column"
+                "class": "deck"
             });
 
             //create the title
             var titleContainer = $("<div />",
             {
-                "class": "lastLibrary-flex lastLibrary-flex--row"
+                "class": "deckTitle"
+            });
+
+            //create the colors
+            var colorContainer = $("<div />",
+            {
+                "class": "deckColors"
             });
 
             //append the magic mana symbols
@@ -205,11 +211,11 @@
 
                     //if the colour was a valid colour, append a span to show the symbol and append it to the title container
                     if (manaColour !== "") {
-                        $("<span />",
+                        $("<div />",
                             {
                                 "class": "mana xsmall " + manaColour
                             })
-                            .appendTo(titleContainer);
+                            .appendTo(colorContainer);
                     }
                 });
             }
@@ -217,7 +223,7 @@
             //append the Deck Title
             $("<a />",
                 {
-                    "class": "padding-left-small",
+                    "class": "deckTitle",
                     "text": deckData.deck.deckName,
                     "href": deckData.url
                 })
@@ -226,7 +232,7 @@
             //create the content container
             var imageAndDescriptionContainer = $("<div />",
             {
-                "class": "lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between"
+                "class": "deckCardData"
             });
 
             //create the image
@@ -234,30 +240,32 @@
             $("<img />",
                 {
                     "src": cardToDisplay.imageUrl,
-                    "alt": cardToDisplay.name + " image"
+                    "alt": cardToDisplay.name + " image",
+                    "class": "deckImage"
                 })
                 .appendTo(imageAndDescriptionContainer);
 
             //create the description container
             var descriptionConatiner = $("<div />",
             {
-                "class": "lastLibrary-flex lastLibrary-flex--column lastLibrary-flex--justify-space-between"
+                "class": "deckInfo"
             });
 
             //create the description
-            $("<em />",
+            $("<div />",
                 {
-                    "text": deckData.deck.description
+                    "text": deckData.deck.description,
+                    "class": "deckDescription"
                 })
                 .appendTo($("<p />"))
                 .appendTo(descriptionConatiner);
 
             //create the author name
-            $("<p />",
-                {
-                    "text": deckData.deck.creator
-                })
-                .appendTo(descriptionConatiner);
+            var usernameContainer = $("<div />",
+            {
+                "text": "by " + deckData.deck.creator,
+                "class": "deckUsername"
+            });
 
             //create the rating
             var ratingText = "";
@@ -268,29 +276,41 @@
                 $("<p />",
                     {
                         "text": "Not yet rated"
+
                     })
                     .appendTo(descriptionConatiner);
             } else {
                 var ratingScore = 0.0;
                 deckData.deck.ratings.forEach(function(rating) {
-                    ratingScore += parseFloat(rating.rating).toFixed(1);
+                    ratingScore += parseFloat(rating.rating);
                 });
+                var averageRating = Math.round(ratingScore / deckData.deck.ratings.length);
+                ratingText = "Avg. Rating " + averageRating + "/5";
 
-                ratingText = "Ave rating " + Math.round(ratingScore / deckData.deck.ratings.length) + "/5";
-                $("<p />",
+                $("<img />",
                     {
-                        "text": ratingText
+                        "class": "ratingImage",
+                        "src": "images/"+averageRating+".png"  
                     })
                     .appendTo(descriptionConatiner);
-                $("<p />",
+                $("<div />",
                     {
-                        "text": deckData.deck.ratings.length + " ratings"
+                        "text": ratingText,
+                        "class": "deckRating"
+                    })
+                    .appendTo(descriptionConatiner);
+                $("<div />",
+                    {
+                        "text": deckData.deck.ratings.length + " Ratings",
+                        "class": "deckRating"
                     })
                     .appendTo(descriptionConatiner);
             }
 
             //append the containers together
             titleContainer.appendTo(containingDiv);
+            colorContainer.appendTo(containingDiv);
+            usernameContainer.appendTo(containingDiv);
             descriptionConatiner.appendTo(imageAndDescriptionContainer);
             imageAndDescriptionContainer.appendTo(containingDiv);
 
