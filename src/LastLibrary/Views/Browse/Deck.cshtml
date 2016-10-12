@@ -9,9 +9,9 @@
 }
 
 <div class="headerPadding"></div>
-<div class="col-md-12">
+<div class="col-md-12 deckView">
     <h1-custom>@Model.Deck.DeckName</h1-custom>
-    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-around">
+    <div class="deckTopLine">
         <p>
             Colours:
             @{
@@ -62,7 +62,13 @@
             {
                 var ratingDouble = Model.Deck.Ratings.Select(e => e.Rating).Average();
                 var ratingAverage = Math.Round(Convert.ToDecimal(ratingDouble));
-                <p>Rating: @ratingAverage/5</p>
+                <p>
+                    @{
+                        var imagePath = "../../images/" + @ratingAverage + ".png";
+                    }
+                    Rating:
+                    <img src="@imagePath" alt="@ratingAverage" class="ratingImage" />
+                </p>
                 <p>Times Rated: @Model.Deck.Ratings.Count</p>
             }
         }
@@ -70,17 +76,16 @@
             Posted: @Model.Deck.CreationDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
         </p>
     </div>
-    <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--justify-center">
-        <p>
-            <em>
-                @Model.Deck.Description
-            </em>
-        </p>
+    <div class="deckViewDescription">
+        <div class="deckViewText">
+            @Model.Deck.Description
+        </div>
+        
     </div>
     @if (Model.IsCreator)
     {
-        <div class="lastLibrary-100-width lastLibrary-flex lastLibrary-flex--justify-flex-end">
-            <div class="col-md-3 lastLibrary-flex lastLibrary-flex--justify-space-around">
+        <div class="deckOptions">
+            <div class="optionButtons">
                 <a asp-area="" asp-controller="DeckManager" asp-action="Edit" asp-route-id="@Model.DeckId">
                     Edit
                 </a>
@@ -115,13 +120,13 @@
     </div>
 
     <div>
-        <div class="lastLibrary-flex lastLibrary-flex--column">
+        <div class="lastLibrary-flex lastLibrary-flex--column commentSection">
             @if ((Model.Deck.Comments != null) && (Model.Deck.Comments.Count > 0))
             {
                 foreach (var comment in Model.Deck.Comments)
                 {
                     <div class="lastLibrary-flex lastLibrary-flex--column">
-                        <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between">
+                        <div class="lastLibrary-flex lastLibrary-flex--row lastLibrary-flex--justify-space-between commentName">
                             <p>
                                 @comment.Commenter
                             </p>
@@ -129,7 +134,7 @@
                                 @comment.CommentDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
                             </p>
                         </div>
-                        <p>
+                        <p class="comment">
                             @comment.Comment
                         </p>
                     </div>

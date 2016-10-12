@@ -1,7 +1,6 @@
 ﻿body{
     font-family: "Open Sans", Serif;
     font-size: 2em;
-    padding-top: 65px; 
 }
 
 .pushRight {
@@ -404,6 +403,77 @@ select {
   flex-wrap: wrap;
 }
 
+
+/* ---------------- Single deck page ---------------- */
+.deckTopLine {
+    font-size: 70%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    
+}
+
+.deckView {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.deckViewDescription {
+    font-style: italic;
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.deckViewText {
+    max-width: 50%;
+}
+
+.deckOptions {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.optionButtons {
+    justify-content: flex-end;
+
+}
+
+.optionButtons a {
+    margin-right: 30px;
+}
+
+#ratingSelect {
+    width: 40px;
+    height: 40px;
+    margin: 20px;
+}
+
+#ratingLabel {
+    margin-top: 30px;
+}
+
+.commentName {
+    font-size: 80%;
+    background-color: #d7d7d7;
+    padding-top: 7px;
+    padding-left: 7px;
+     padding-right: 7px;
+}
+
+.comment {
+    padding: 20px;
+}
+
+.commentSection {
+    margin: 20px;
+}
 /* -- placeholder, should be deleted when done -- */
 .placeholder-square--purple {
     background-color: purple;
