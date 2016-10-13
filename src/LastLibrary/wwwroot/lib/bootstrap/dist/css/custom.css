@@ -511,13 +511,13 @@ select {
 
 /* ---------------- logins---------------- */
 .logOut {
-    width: 40%
+    width: 30%
 }
 
 .navLinks {
     display: flex;
     flex-direction: row;
-    width: 30%;
+    width: 40%;
 }
 
 
